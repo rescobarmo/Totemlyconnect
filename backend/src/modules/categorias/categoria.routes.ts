@@ -9,14 +9,14 @@ const router = Router();
 
 router.get("/", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const categorias = await CategoriaService.findAll(req.restaurantId!, true);
+    const categorias = await CategoriaService.findAll(req.restaurantId, true);
     res.json({ success: true, data: categorias });
   } catch (error) { next(error); }
 });
 
 router.get("/activas", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const categorias = await CategoriaService.findAll(req.restaurantId!, false);
+    const categorias = await CategoriaService.findAll(req.restaurantId, false);
     res.json({ success: true, data: categorias });
   } catch (error) { next(error); }
 });
@@ -30,28 +30,28 @@ router.get("/:id", authMiddleware, tenantMiddleware, async (req: AuthRequest, re
 
 router.post("/", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const cat = await CategoriaService.create(req.restaurantId!, req.body);
+    const cat = await CategoriaService.create(req.restaurantId, req.body);
     res.status(201).json({ success: true, data: cat });
   } catch (error) { next(error); }
 });
 
 router.put("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const cat = await CategoriaService.update(Number(req.params.id), req.body, req.restaurantId!);
+    const cat = await CategoriaService.update(Number(req.params.id), req.body, req.restaurantId);
     res.json({ success: true, data: cat });
   } catch (error) { next(error); }
 });
 
 router.patch("/:id/toggle", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const cat = await CategoriaService.toggleActivo(Number(req.params.id), req.restaurantId!);
+    const cat = await CategoriaService.toggleActivo(Number(req.params.id), req.restaurantId);
     res.json({ success: true, data: cat });
   } catch (error) { next(error); }
 });
 
 router.delete("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await CategoriaService.remove(Number(req.params.id), req.restaurantId!);
+    await CategoriaService.remove(Number(req.params.id), req.restaurantId);
     res.json({ success: true, message: "Categoría eliminada" });
   } catch (error) { next(error); }
 });

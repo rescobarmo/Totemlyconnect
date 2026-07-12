@@ -4,7 +4,7 @@ export interface AuthUser {
   id: number;
   name: string;
   email: string;
-  role: "admin" | "mesero";
+  role: "superadmin" | "admin" | "mesero";
   restaurantId: number | null;
   restaurantNombre?: string | null;
 }

@@ -11,7 +11,7 @@ const router = Router();
 router.post("/iniciar", authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { mesa_id } = req.body;
-    const pedido = await PedidoService.iniciar(Number(mesa_id), req.user!.id, req.user!.restaurantId!);
+    const pedido = await PedidoService.iniciar(Number(mesa_id), req.user!.id, req.user!.restaurantId);
     res.status(201).json({ success: true, data: pedido });
   } catch (error) { next(error); }
 });
@@ -23,7 +23,7 @@ router.post("/agregar-item", authMiddleware, async (req: AuthRequest, res: Respo
       Number(pedido_id),
       Number(producto_id),
       Math.max(1, Number(cantidad)),
-      req.user!.restaurantId!
+      req.user!.restaurantId
     );
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
@@ -31,7 +31,7 @@ router.post("/agregar-item", authMiddleware, async (req: AuthRequest, res: Respo
 
 router.delete("/eliminar-item/:id", authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const result = await PedidoService.eliminarItem(Number(req.params.id), req.user!.restaurantId!);
+    const result = await PedidoService.eliminarItem(Number(req.params.id), req.user!.restaurantId);
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 });
@@ -39,7 +39,7 @@ router.delete("/eliminar-item/:id", authMiddleware, async (req: AuthRequest, res
 router.post("/entregar", authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { pedido_id } = req.body;
-    const pedido = await PedidoService.entregar(Number(pedido_id), req.user!.restaurantId!);
+    const pedido = await PedidoService.entregar(Number(pedido_id), req.user!.restaurantId);
     res.json({ success: true, data: pedido });
   } catch (error) { next(error); }
 });
@@ -47,7 +47,7 @@ router.post("/entregar", authMiddleware, async (req: AuthRequest, res: Response,
 router.get("/ventas", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { user_id, fecha_desde, fecha_hasta } = req.query;
-    const result = await PedidoService.listarVentas(req.user!.restaurantId!, {
+    const result = await PedidoService.listarVentas(req.user!.restaurantId, {
       userId: user_id ? Number(user_id) : undefined,
       fechaDesde: fecha_desde as string | undefined,
       fechaHasta: fecha_hasta as string | undefined,
@@ -88,7 +88,7 @@ router.post("/reimprimir/:id", authMiddleware, async (req: AuthRequest, res: Res
 
 router.get("/:id", authMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const pedido = await PedidoService.findById(Number(req.params.id), req.user!.restaurantId!);
+    const pedido = await PedidoService.findById(req.user!.restaurantId, Number(req.params.id));
     res.json({ success: true, data: pedido });
   } catch (error) { next(error); }
 });

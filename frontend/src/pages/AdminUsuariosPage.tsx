@@ -70,7 +70,7 @@ export default function AdminUsuariosPage() {
                   <td className="px-4 py-3 text-white font-medium">{u.name}</td>
                   <td className="px-4 py-3 text-slate-300">{u.email}</td>
                   <td className="px-4 py-3">
-                    <span className={`px-3 py-1 rounded text-xs font-medium ${u.role === "admin" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-400"}`}>
+                    <span className={`px-3 py-1 rounded text-xs font-medium ${u.role === "superadmin" ? "bg-purple-500/20 text-purple-400" : u.role === "admin" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-400"}`}>
                       {u.role}
                     </span>
                   </td>

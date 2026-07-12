@@ -2,11 +2,12 @@ import { Router, Response } from "express";
 import { RestauranteService } from "./restaurante.service";
 import { authMiddleware } from "../../common/middleware/auth.middleware";
 import { adminMiddleware } from "../../common/middleware/admin.middleware";
+import { superadminMiddleware } from "../../common/middleware/superadmin.middleware";
 import { AuthRequest } from "../../common/types";
 
 const router = Router();
 
-router.use(authMiddleware, adminMiddleware);
+router.use(authMiddleware, adminMiddleware, superadminMiddleware);
 
 router.get("/", async (_req: AuthRequest, res: Response) => {
   try {

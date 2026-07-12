@@ -70,6 +70,20 @@ async function main() {
   });
   if (usersMigrated > 0) console.log(`Usuarios migrados: ${usersMigrated}`);
 
+  // Superadmin global (no asociado a ningun restaurante)
+  const superadmin = await prisma.user.upsert({
+    where: { restaurantId_email: { restaurantId: null, email: "super@totemconnect.com" } },
+    update: {},
+    create: {
+      name: "Super Admin",
+      email: "super@totemconnect.com",
+      password: await bcrypt.hash("admin123", 10),
+      role: "superadmin",
+      restaurantId: null,
+    },
+  });
+  console.log("Superadmin creado:", superadmin.email);
+
   const admin = await prisma.user.upsert({
     where: { restaurantId_email: { restaurantId: restaurant.id, email: "admin@minifood.com" } },
     update: {},

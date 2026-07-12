@@ -2,9 +2,10 @@ import prisma from "../../config/database";
 import { AppError } from "../../common/errors/AppError";
 
 export class ProductoService {
-  static async findAll(restaurantId: number, includeInactive = false) {
+  static async findAll(restaurantId?: number | null, includeInactive = false) {
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     return prisma.producto.findMany({
-      where: { restaurantId, ...(includeInactive ? {} : { activo: true }) },
+      where: { ...whereRestaurant, ...(includeInactive ? {} : { activo: true }) },
       include: {
         categoria: { select: { id: true, nombre: true, icono: true } },
       },
@@ -15,13 +16,14 @@ export class ProductoService {
     });
   }
 
-  static async findGrouped(restaurantId: number) {
+  static async findGrouped(restaurantId: number | null | undefined) {
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     const categorias = await prisma.categoria.findMany({
-      where: { activo: true, restaurantId },
+      where: { activo: true, ...whereRestaurant },
       orderBy: { nombre: "asc" },
       include: {
         productos: {
-          where: { activo: true, restaurantId },
+          where: { activo: true, ...whereRestaurant },
           orderBy: { nombre: "asc" },
         },
       },
@@ -29,9 +31,10 @@ export class ProductoService {
     return categorias.filter((c) => c.productos.length > 0);
   }
 
-  static async findById(restaurantId: number, id: number) {
+  static async findById(restaurantId: number | null | undefined, id: number) {
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     const prod = await prisma.producto.findUnique({
-      where: { id, restaurantId },
+      where: { id, ...whereRestaurant },
       include: { categoria: true },
     });
     if (!prod) throw AppError.notFound("Producto no encontrado");
@@ -39,7 +42,7 @@ export class ProductoService {
   }
 
   static async create(
-    restaurantId: number,
+    restaurantId: number | null | undefined,
     data: {
       categoriaId: number;
       nombre: string;
@@ -51,7 +54,7 @@ export class ProductoService {
     const cat = await prisma.categoria.findUniqueOrThrow({
       where: { id: data.categoriaId },
     });
-    if (cat.restaurantId !== restaurantId) {
+    if (restaurantId != null && cat.restaurantId !== restaurantId) {
       throw AppError.badRequest("La categoría no pertenece a este restaurante");
     }
 
@@ -66,7 +69,7 @@ export class ProductoService {
   }
 
   static async update(
-    restaurantId: number,
+    restaurantId: number | null | undefined,
     id: number,
     data: {
       categoriaId?: number;
@@ -82,29 +85,32 @@ export class ProductoService {
       const cat = await prisma.categoria.findUniqueOrThrow({
         where: { id: data.categoriaId },
       });
-      if (cat.restaurantId !== restaurantId) {
+      if (restaurantId != null && cat.restaurantId !== restaurantId) {
         throw AppError.badRequest("La categoría no pertenece a este restaurante");
       }
     }
 
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     return prisma.producto.update({
-      where: { id, restaurantId },
+      where: { id, ...whereRestaurant },
       data,
       include: { categoria: true },
     });
   }
 
-  static async toggleActivo(restaurantId: number, id: number) {
+  static async toggleActivo(restaurantId: number | null | undefined, id: number) {
     const prod = await this.findById(restaurantId, id);
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     return prisma.producto.update({
-      where: { id, restaurantId },
+      where: { id, ...whereRestaurant },
       data: { activo: !prod.activo },
     });
   }
 
-  static async remove(restaurantId: number, id: number) {
+  static async remove(restaurantId: number | null | undefined, id: number) {
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     const prod = await prisma.producto.findUnique({
-      where: { id, restaurantId },
+      where: { id, ...whereRestaurant },
       include: { _count: { select: { detalles: true } } },
     });
 
@@ -113,13 +119,14 @@ export class ProductoService {
       throw AppError.conflict("No se puede eliminar: tiene pedidos asociados");
     }
 
-    return prisma.producto.delete({ where: { id, restaurantId } });
+    return prisma.producto.delete({ where: { id, ...whereRestaurant } });
   }
 
-  static async updateImage(restaurantId: number, id: number, imagen: string) {
+  static async updateImage(restaurantId: number | null | undefined, id: number, imagen: string) {
     await this.findById(restaurantId, id);
+    const whereRestaurant = restaurantId != null ? { restaurantId } : {};
     return prisma.producto.update({
-      where: { id, restaurantId },
+      where: { id, ...whereRestaurant },
       data: { imagen },
     });
   }

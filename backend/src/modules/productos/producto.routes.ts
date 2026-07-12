@@ -26,56 +26,56 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 router.get("/", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const productos = await ProductoService.findAll(req.restaurantId!, true);
+    const productos = await ProductoService.findAll(req.restaurantId, true);
     res.json({ success: true, data: productos });
   } catch (error) { next(error); }
 });
 
 router.get("/activos", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const productos = await ProductoService.findAll(req.restaurantId!, false);
+    const productos = await ProductoService.findAll(req.restaurantId, false);
     res.json({ success: true, data: productos });
   } catch (error) { next(error); }
 });
 
 router.get("/agrupados", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const data = await ProductoService.findGrouped(req.restaurantId!);
+    const data = await ProductoService.findGrouped(req.restaurantId);
     res.json({ success: true, data });
   } catch (error) { next(error); }
 });
 
 router.get("/:id", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.findById(req.restaurantId!, Number(req.params.id));
+    const prod = await ProductoService.findById(req.restaurantId, Number(req.params.id));
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
 router.post("/", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.create(req.restaurantId!, req.body);
+    const prod = await ProductoService.create(req.restaurantId, req.body);
     res.status(201).json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
 router.put("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.update(req.restaurantId!, Number(req.params.id), req.body);
+    const prod = await ProductoService.update(req.restaurantId, Number(req.params.id), req.body);
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
 router.patch("/:id/toggle", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.toggleActivo(req.restaurantId!, Number(req.params.id));
+    const prod = await ProductoService.toggleActivo(req.restaurantId, Number(req.params.id));
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
 router.delete("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await ProductoService.remove(req.restaurantId!, Number(req.params.id));
+    await ProductoService.remove(req.restaurantId, Number(req.params.id));
     res.json({ success: true, message: "Producto eliminado" });
   } catch (error) { next(error); }
 });
@@ -87,7 +87,7 @@ router.post("/:id/imagen", authMiddleware, adminMiddleware, tenantMiddleware, up
       return;
     }
     const imageUrl = `/uploads/productos/${req.file.filename}`;
-    const prod = await ProductoService.updateImage(req.restaurantId!, Number(req.params.id), imageUrl);
+    const prod = await ProductoService.updateImage(req.restaurantId, Number(req.params.id), imageUrl);
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
@@ -99,7 +99,7 @@ router.post("/importar-excel", authMiddleware, adminMiddleware, tenantMiddleware
       return;
     }
 
-    const restaurantId = req.restaurantId!;
+    const restaurantId = req.restaurantId;
     const workbook = XLSX.readFile(req.file.path);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet);

@@ -2,6 +2,7 @@ import { Router, Response } from "express";
 import { AuthService } from "./auth.service";
 import { authMiddleware } from "../../common/middleware/auth.middleware";
 import { adminMiddleware } from "../../common/middleware/admin.middleware";
+import { superadminMiddleware } from "../../common/middleware/superadmin.middleware";
 import { tenantMiddleware } from "../../common/middleware/tenant.middleware";
 import { AuthRequest } from "../../common/types";
 
@@ -20,7 +21,7 @@ router.post("/login", async (req, res: Response) => {
   }
 });
 
-router.post("/register", async (req, res: Response) => {
+router.post("/register", superadminMiddleware, async (req, res: Response) => {
   try {
     const { name, email, password, restaurantId } = req.body;
     const user = await AuthService.register(name, email, password, restaurantId);
@@ -58,8 +59,8 @@ router.get("/usuarios", authMiddleware, adminMiddleware, tenantMiddleware, async
 // Admin: crear usuario (mesero) dentro del restaurante
 router.post("/usuarios", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email, password } = req.body;
-    const user = await AuthService.crear(name, email, password, req.restaurantId);
+    const { name, email, password, role } = req.body;
+    const user = await AuthService.crear(name, email, password, req.restaurantId, role);
     res.status(201).json({ success: true, data: user });
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message });

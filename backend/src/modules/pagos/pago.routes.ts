@@ -8,7 +8,7 @@ const router = Router();
 
 router.get("/:pedidoId", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const pagos = await PagoService.getByPedido(Number(req.params.pedidoId), req.restaurantId!);
+    const pagos = await PagoService.getByPedido(req.restaurantId, Number(req.params.pedidoId));
     res.json({ success: true, data: pagos });
   } catch (error) { next(error); }
 });
@@ -17,8 +17,8 @@ router.post("/dividir-equitativo", authMiddleware, tenantMiddleware, async (req:
   try {
     const { pedido_id, personas = 1, metodo = "tarjeta", propina_pct = 0 } = req.body;
     const result = await PagoService.dividirEquitativo(
+      req.restaurantId,
       Number(pedido_id),
-      req.restaurantId!,
       Math.max(1, Number(personas)),
       metodo,
       Number(propina_pct)
@@ -30,7 +30,7 @@ router.post("/dividir-equitativo", authMiddleware, tenantMiddleware, async (req:
 router.post("/dividir-por-items", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { pedido_id, grupos } = req.body;
-    const result = await PagoService.dividirPorItems(Number(pedido_id), req.restaurantId!, grupos);
+    const result = await PagoService.dividirPorItems(req.restaurantId, Number(pedido_id), grupos);
     res.status(201).json({ success: true, data: result });
   } catch (error) { next(error); }
 });
@@ -38,7 +38,7 @@ router.post("/dividir-por-items", authMiddleware, tenantMiddleware, async (req: 
 router.post("/procesar", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { pago_id, metodo } = req.body;
-    const result = await PagoService.procesarPago(Number(pago_id), req.restaurantId!, metodo);
+    const result = await PagoService.procesarPago(req.restaurantId, Number(pago_id), metodo);
     const statusCode = result.aprobado ? 200 : 402;
     res.status(statusCode).json({ success: result.aprobado, data: result });
   } catch (error) { next(error); }
@@ -47,7 +47,7 @@ router.post("/procesar", authMiddleware, tenantMiddleware, async (req: AuthReque
 router.post("/cerrar-cuenta", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { pedido_id } = req.body;
-    const result = await PagoService.cerrarCuenta(Number(pedido_id), req.user!.id, req.restaurantId!);
+    const result = await PagoService.cerrarCuenta(req.restaurantId, Number(pedido_id), req.user!.id);
     res.json({ success: true, data: result });
   } catch (error) { next(error); }
 });
