@@ -39,36 +39,36 @@ async function main() {
   });
   console.log("Restaurante creado:", restaurant.nombre);
 
+  // Limpiar datos previos del restaurante demo (para evitar conflictos de unique)
+  await prisma.pagoParcial.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  await prisma.detallePedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  await prisma.historialPedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  await prisma.historialMesa.deleteMany({ where: { mesa: { restaurantId: restaurant.id } } });
+  await prisma.pedido.deleteMany({ where: { restaurantId: restaurant.id } });
+  await prisma.producto.deleteMany({ where: { restaurantId: restaurant.id } });
+  await prisma.categoria.deleteMany({ where: { restaurantId: restaurant.id } });
+  await prisma.mesa.deleteMany({ where: { restaurantId: restaurant.id } });
+  await prisma.user.deleteMany({ where: { restaurantId: restaurant.id } });
+  console.log("Datos previos del restaurante eliminados");
+
   // Migrar datos existentes (de schema anterior sin restaurante) al restaurante demo
-  const { count: mesasMigrated } = await prisma.mesa.updateMany({
-    where: { restaurantId: null },
-    data: { restaurantId: restaurant.id },
-  });
-  if (mesasMigrated > 0) console.log(`Mesas migradas: ${mesasMigrated}`);
+  const migrar = async (model, nombre) => {
+    try {
+      const { count } = await model.updateMany({
+        where: { restaurantId: null },
+        data: { restaurantId: restaurant.id },
+      });
+      if (count > 0) console.log(`${nombre} migrados: ${count}`);
+    } catch (e) {
+      console.log(`  (sin datos que migrar en ${nombre})`);
+    }
+  };
 
-  const { count: catsMigrated } = await prisma.categoria.updateMany({
-    where: { restaurantId: null },
-    data: { restaurantId: restaurant.id },
-  });
-  if (catsMigrated > 0) console.log(`Categorías migradas: ${catsMigrated}`);
-
-  const { count: prodsMigrated } = await prisma.producto.updateMany({
-    where: { restaurantId: null },
-    data: { restaurantId: restaurant.id },
-  });
-  if (prodsMigrated > 0) console.log(`Productos migrados: ${prodsMigrated}`);
-
-  const { count: pedidosMigrated } = await prisma.pedido.updateMany({
-    where: { restaurantId: null },
-    data: { restaurantId: restaurant.id },
-  });
-  if (pedidosMigrated > 0) console.log(`Pedidos migrados: ${pedidosMigrated}`);
-
-  const { count: usersMigrated } = await prisma.user.updateMany({
-    where: { restaurantId: null },
-    data: { restaurantId: restaurant.id },
-  });
-  if (usersMigrated > 0) console.log(`Usuarios migrados: ${usersMigrated}`);
+  await migrar(prisma.mesa, "Mesas");
+  await migrar(prisma.categoria, "Categorías");
+  await migrar(prisma.producto, "Productos");
+  await migrar(prisma.pedido, "Pedidos");
+  await migrar(prisma.user, "Usuarios");
 
   // Superadmin global (no asociado a ningun restaurante)
   const superadmin = await prisma.user.upsert({
