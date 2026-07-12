@@ -1,0 +1,40 @@
+node_modules/
+vendor/
+backend/dist/
+frontend/dist/
+dist/
+
+# Sensible
+.env
+
+# Uploads (imágenes subidas localmente)
+uploads/
+
+# Logs
+*.log
+backend*.log
+frontend*.log
+logs/
+
+# Cache
+cache/
+tmp/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp
+*.tmp
+*.bak
+*.swp
+*~
+
+# Backups
+*.sql.gz
+*.zip

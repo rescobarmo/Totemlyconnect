@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: totemconnect-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: minifood
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: totemconnect-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: totemconnect-api
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/minifood?schema=public
+      JWT_SECRET: totemconnect-super-secret-key-2026
+      JWT_EXPIRES_IN: 24h
+      PORT: 3000
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      CORS_ORIGIN: http://localhost:5173
+
+volumes:
+  pgdata:
+  redisdata:

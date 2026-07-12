@@ -1,0 +1,10 @@
+{
+  "name": "totemconnecct",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd backend && npm install && npx prisma generate && npm run build && cd ../frontend && npm install && npm run build",
+    "start": "cd backend && node dist/main.js",
+    "seed": "cd backend && npx prisma db seed"
+  }
+}

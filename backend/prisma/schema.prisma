@@ -1,0 +1,225 @@
+// ============================================================
+// TotemConnect - Prisma Schema (PostgreSQL)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  admin
+  mesero
+
+  @@map("user_role")
+}
+
+enum MesaEstado {
+  libre
+  ocupada
+  cuenta_cerrada
+
+  @@map("mesa_estado")
+}
+
+enum PedidoEstado {
+  abierto
+  entregado
+  cerrado
+  cancelado
+
+  @@map("pedido_estado")
+}
+
+enum PagoMetodo {
+  efectivo
+  tarjeta
+  transferencia
+
+  @@map("pago_metodo")
+}
+
+enum PagoTipoDivision {
+  equitativa
+  por_items
+  personalizada
+
+  @@map("pago_tipo_division")
+}
+
+enum PagoEstado {
+  pendiente
+  aprobado
+  rechazado
+
+  @@map("pago_estado")
+}
+
+// ============================================================
+// MODELS
+// ============================================================
+
+model User {
+  id        Int      @id @default(autoincrement()) @db.Integer
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      UserRole @default(mesero)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+
+  pedidos         Pedido[]
+  historialPedido HistorialPedido[]
+  historialMesa   HistorialMesa[]
+
+  @@map("users")
+}
+
+model Categoria {
+  id        Int      @id @default(autoincrement()) @db.Integer
+  nombre    String   @db.VarChar(100)
+  icono     String?  @db.VarChar(50)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Producto {
+  id          Int      @id @default(autoincrement()) @db.Integer
+  categoriaId Int      @map("categoria_id") @db.Integer
+  nombre      String   @db.VarChar(200)
+  precio      Decimal  @db.Decimal(10, 2)
+  imagen      String?  @db.VarChar(255)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  categoria Categoria       @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  detalles  DetallePedido[]
+
+  @@index([categoriaId])
+  @@map("productos")
+}
+
+model Mesa {
+  id        Int         @id @default(autoincrement()) @db.Integer
+  numero    Int         @unique @db.Integer
+  estado    MesaEstado  @default(libre)
+  createdAt DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  pedidos       Pedido[]
+  historialMesa HistorialMesa[]
+
+  @@index([estado])
+  @@map("mesas")
+}
+
+model Pedido {
+  id        Int          @id @default(autoincrement()) @db.Integer
+  mesaId    Int          @map("mesa_id") @db.Integer
+  userId    Int          @map("user_id") @db.Integer
+  estado    PedidoEstado @default(abierto)
+  total     Decimal      @default(0.00) @db.Decimal(10, 2)
+  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime     @default(now()) @map("updated_at") @db.Timestamptz
+
+  mesa            Mesa              @relation(fields: [mesaId], references: [id], onDelete: Restrict)
+  user            User              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  detalles        DetallePedido[]
+  pagosParciales  PagoParcial[]
+  historialPedido HistorialPedido[]
+  historialMesa   HistorialMesa[]
+
+  @@index([mesaId])
+  @@index([userId])
+  @@index([mesaId, estado])
+  @@map("pedidos")
+}
+
+model DetallePedido {
+  id             Int     @id @default(autoincrement()) @db.Integer
+  pedidoId       Int     @map("pedido_id") @db.Integer
+  productoId     Int     @map("producto_id") @db.Integer
+  cantidad       Int     @default(1) @db.Integer
+  precioUnitario Decimal @map("precio_unitario") @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  entregado      Boolean @default(false)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  pedido   Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Restrict)
+
+  @@index([pedidoId])
+  @@index([productoId])
+  @@map("detalle_pedidos")
+}
+
+model PagoParcial {
+  id               Int              @id @default(autoincrement()) @db.Integer
+  pedidoId         Int              @map("pedido_id") @db.Integer
+  monto            Decimal          @db.Decimal(10, 2)
+  metodo           PagoMetodo       @default(tarjeta)
+  tipoDivision     PagoTipoDivision @default(equitativa)
+  itemsIds         Json?            @map("items_ids")
+  estado           PagoEstado       @default(pendiente)
+  transaccionId    String?          @map("transaccion_id") @db.VarChar(100)
+  mensajeRespuesta String?          @map("mensaje_respuesta") @db.VarChar(255)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime         @default(now()) @map("updated_at") @db.Timestamptz
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+
+  @@index([pedidoId])
+  @@index([estado])
+  @@map("pagos_parciales")
+}
+
+// ============================================================
+// HISTORIAL
+// ============================================================
+
+model HistorialPedido {
+  id             Int           @id @default(autoincrement()) @db.Integer
+  pedidoId       Int           @map("pedido_id") @db.Integer
+  userId         Int           @map("user_id") @db.Integer
+  estadoAnterior PedidoEstado? @map("estado_anterior")
+  estadoNuevo    PedidoEstado  @map("estado_nuevo")
+  observacion    String?       @db.VarChar(500)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
+
+  pedido Pedido @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([pedidoId])
+  @@index([createdAt(sort: Desc)])
+  @@map("historial_pedido")
+}
+
+model HistorialMesa {
+  id             Int          @id @default(autoincrement()) @db.Integer
+  mesaId         Int          @map("mesa_id") @db.Integer
+  userId         Int?         @map("user_id") @db.Integer
+  estadoAnterior MesaEstado?  @map("estado_anterior")
+  estadoNuevo    MesaEstado   @map("estado_nuevo")
+  pedidoId       Int?         @map("pedido_id") @db.Integer
+  observacion    String?      @db.VarChar(500)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz
+
+  mesa   Mesa    @relation(fields: [mesaId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pedido Pedido? @relation(fields: [pedidoId], references: [id], onDelete: SetNull)
+
+  @@index([mesaId])
+  @@index([createdAt(sort: Desc)])
+  @@map("historial_mesa")
+}
