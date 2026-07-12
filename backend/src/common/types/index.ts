@@ -6,6 +6,7 @@ export interface AuthUser {
   email: string;
   role: "admin" | "mesero";
   restaurantId: number | null;
+  restaurantNombre?: string | null;
 }
 
 export interface AuthRequest extends Request {

@@ -19,12 +19,17 @@ export class AuthService {
       throw AppError.unauthorized("Credenciales inválidas");
     }
 
+    const restaurant = user.restaurantId
+      ? await prisma.restaurant.findUnique({ where: { id: user.restaurantId }, select: { id: true, nombre: true } })
+      : null;
+
     const payload: AuthUser = {
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role,
       restaurantId: user.restaurantId,
+      restaurantNombre: restaurant?.nombre || null,
     };
 
     const token = jwt.sign(payload, env.JWT_SECRET, {
@@ -84,7 +89,11 @@ export class AuthService {
       throw AppError.notFound("Usuario no encontrado");
     }
 
-    return user;
+    const restaurant = user.restaurantId
+      ? await prisma.restaurant.findUnique({ where: { id: user.restaurantId }, select: { id: true, nombre: true } })
+      : null;
+
+    return { ...user, restaurantNombre: restaurant?.nombre || null };
   }
 
   static async listar(restaurantId?: number) {

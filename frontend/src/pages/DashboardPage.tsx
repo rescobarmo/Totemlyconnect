@@ -26,6 +26,9 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold text-white">🍽️ TotemConnect</h1>
           <div className="flex items-center gap-4">
+            {user?.restaurantNombre && (
+              <span className="text-emerald-400 text-sm font-medium">{user.restaurantNombre}</span>
+            )}
             <span className="text-slate-300">{user?.name}</span>
             <span className="px-3 py-1 bg-slate-700 text-slate-300 text-sm rounded-full">{user?.role}</span>
             <button onClick={logout} className="text-slate-400 hover:text-white transition">Salir</button>

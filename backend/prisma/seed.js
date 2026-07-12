@@ -39,6 +39,37 @@ async function main() {
   });
   console.log("Restaurante creado:", restaurant.nombre);
 
+  // Migrar datos existentes (de schema anterior sin restaurante) al restaurante demo
+  const { count: mesasMigrated } = await prisma.mesa.updateMany({
+    where: { restaurantId: null },
+    data: { restaurantId: restaurant.id },
+  });
+  if (mesasMigrated > 0) console.log(`Mesas migradas: ${mesasMigrated}`);
+
+  const { count: catsMigrated } = await prisma.categoria.updateMany({
+    where: { restaurantId: null },
+    data: { restaurantId: restaurant.id },
+  });
+  if (catsMigrated > 0) console.log(`Categorías migradas: ${catsMigrated}`);
+
+  const { count: prodsMigrated } = await prisma.producto.updateMany({
+    where: { restaurantId: null },
+    data: { restaurantId: restaurant.id },
+  });
+  if (prodsMigrated > 0) console.log(`Productos migrados: ${prodsMigrated}`);
+
+  const { count: pedidosMigrated } = await prisma.pedido.updateMany({
+    where: { restaurantId: null },
+    data: { restaurantId: restaurant.id },
+  });
+  if (pedidosMigrated > 0) console.log(`Pedidos migrados: ${pedidosMigrated}`);
+
+  const { count: usersMigrated } = await prisma.user.updateMany({
+    where: { restaurantId: null },
+    data: { restaurantId: restaurant.id },
+  });
+  if (usersMigrated > 0) console.log(`Usuarios migrados: ${usersMigrated}`);
+
   const admin = await prisma.user.upsert({
     where: { restaurantId_email: { restaurantId: restaurant.id, email: "admin@minifood.com" } },
     update: {},
