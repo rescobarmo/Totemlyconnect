@@ -107,13 +107,13 @@ model User {
 
 model Categoria {
   id           Int      @id @default(autoincrement()) @db.Integer
-  restaurantId Int      @map("restaurante_id") @db.Integer
+  restaurantId Int?     @map("restaurante_id") @db.Integer
   nombre       String   @db.VarChar(100)
   icono        String?  @db.VarChar(50)
   activo       Boolean  @default(true)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   productos  Producto[]
 
   @@index([restaurantId])
@@ -122,7 +122,7 @@ model Categoria {
 
 model Producto {
   id           Int      @id @default(autoincrement()) @db.Integer
-  restaurantId Int      @map("restaurante_id") @db.Integer
+  restaurantId Int?     @map("restaurante_id") @db.Integer
   categoriaId  Int      @map("categoria_id") @db.Integer
   nombre       String   @db.VarChar(200)
   precio       Decimal  @db.Decimal(10, 2)
@@ -130,7 +130,7 @@ model Producto {
   activo       Boolean  @default(true)
   createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   categoria  Categoria  @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
   detalles   DetallePedido[]
 
@@ -141,12 +141,12 @@ model Producto {
 
 model Mesa {
   id           Int        @id @default(autoincrement()) @db.Integer
-  restaurantId Int        @map("restaurante_id") @db.Integer
+  restaurantId Int?       @map("restaurante_id") @db.Integer
   numero       Int        @db.Integer
   estado       MesaEstado @default(libre)
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz
 
-  restaurant    Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant    Restaurant?   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   pedidos       Pedido[]
   historialMesa HistorialMesa[]
 
@@ -157,7 +157,7 @@ model Mesa {
 
 model Pedido {
   id        Int          @id @default(autoincrement()) @db.Integer
-  restaurantId Int      @map("restaurante_id") @db.Integer
+  restaurantId Int?     @map("restaurante_id") @db.Integer
   mesaId    Int          @map("mesa_id") @db.Integer
   userId    Int          @map("user_id") @db.Integer
   estado    PedidoEstado @default(abierto)
@@ -165,7 +165,7 @@ model Pedido {
   createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime     @default(now()) @map("updated_at") @db.Timestamptz
 
-  restaurant      Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  restaurant      Restaurant?       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   mesa            Mesa              @relation(fields: [mesaId], references: [id], onDelete: Restrict)
   user            User              @relation(fields: [userId], references: [id], onDelete: Restrict)
   detalles        DetallePedido[]
