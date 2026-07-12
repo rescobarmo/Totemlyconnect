@@ -68,20 +68,30 @@ async function main() {
   await migrar(prisma.categoria, "Categorías");
   await migrar(prisma.producto, "Productos");
   await migrar(prisma.pedido, "Pedidos");
-  await migrar(prisma.user, "Usuarios");
+  // Migrar usuarios que NO sean superadmin (restaurantId = null para superadmin)
+  try {
+    const { count } = await prisma.user.updateMany({
+      where: { restaurantId: null, email: { not: "super@totemconnect.com" } },
+      data: { restaurantId: restaurant.id },
+    });
+    if (count > 0) console.log(`Usuarios migrados: ${count}`);
+  } catch (e) {
+    console.log("  (sin usuarios que migrar)");
+  }
 
   // Superadmin global (no asociado a ningun restaurante)
-  const superadmin = await prisma.user.upsert({
-    where: { restaurantId_email: { restaurantId: null, email: "super@totemconnect.com" } },
-    update: {},
-    create: {
-      name: "Super Admin",
-      email: "super@totemconnect.com",
-      password: await bcrypt.hash("admin123", 10),
-      role: "superadmin",
-      restaurantId: null,
-    },
-  });
+  let superadmin = await prisma.user.findFirst({ where: { email: "super@totemconnect.com", restaurantId: null } });
+  if (!superadmin) {
+    superadmin = await prisma.user.create({
+      data: {
+        name: "Super Admin",
+        email: "super@totemconnect.com",
+        password: await bcrypt.hash("admin123", 10),
+        role: "superadmin",
+        restaurantId: null,
+      },
+    });
+  }
   console.log("Superadmin creado:", superadmin.email);
 
   const admin = await prisma.user.upsert({
