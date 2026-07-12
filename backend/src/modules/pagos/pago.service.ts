@@ -3,7 +3,11 @@ import { AppError } from "../../common/errors/AppError";
 import { events } from "../../gateway/socket.gateway";
 
 export class PagoService {
-  static async getByPedido(pedidoId: number) {
+  static async getByPedido(restaurantId: number, pedidoId: number) {
+    const pedido = await prisma.pedido.findUnique({ where: { id: pedidoId } });
+    if (!pedido) throw AppError.notFound("Pedido no encontrado");
+    if (pedido.restaurantId !== restaurantId) throw AppError.notFound("Pedido no encontrado en este restaurante");
+
     return prisma.pagoParcial.findMany({
       where: { pedidoId },
       orderBy: { id: "asc" },
@@ -11,6 +15,7 @@ export class PagoService {
   }
 
   static async dividirEquitativo(
+      restaurantId: number,
       pedidoId: number,
       personas: number,
       metodo: string,
@@ -19,6 +24,7 @@ export class PagoService {
       const pedido = await prisma.pedido.findFirst({
         where: {
           id: pedidoId,
+          restaurantId,
           estado: { in: ["abierto", "entregado"] },
         },
       });
@@ -64,12 +70,14 @@ export class PagoService {
   }
 
   static async dividirPorItems(
+    restaurantId: number,
     pedidoId: number,
     grupos: Array<{ items_ids: number[]; monto: number; metodo: string }>
   ) {
     const pedido = await prisma.pedido.findFirst({
       where: {
         id: pedidoId,
+        restaurantId,
         estado: { in: ["abierto", "entregado"] },
       },
     });
@@ -98,10 +106,11 @@ export class PagoService {
     return { pagos: pagosCreados };
   }
 
-  static async procesarPago(pagoId: number, metodo?: string) {
-    const pago = await prisma.pagoParcial.findUnique({ where: { id: pagoId } });
+  static async procesarPago(restaurantId: number, pagoId: number, metodo?: string) {
+    const pago = await prisma.pagoParcial.findUnique({ where: { id: pagoId }, include: { pedido: true } });
     if (!pago) throw AppError.notFound("Pago no encontrado");
     if (pago.estado !== "pendiente") throw AppError.badRequest("Este pago ya fue procesado");
+    if (pago.pedido.restaurantId !== restaurantId) throw AppError.notFound("Pago no encontrado en este restaurante");
 
     // Actualizar método si se proporciona uno distinto
     if (metodo && metodo !== pago.metodo) {
@@ -175,9 +184,10 @@ export class PagoService {
     }
   }
 
-  static async cerrarCuenta(pedidoId: number, userId?: number) {
+  static async cerrarCuenta(restaurantId: number, pedidoId: number, userId?: number) {
     const pedido = await prisma.pedido.findUnique({ where: { id: pedidoId } });
     if (!pedido) throw AppError.notFound("Pedido no encontrado");
+    if (pedido.restaurantId !== restaurantId) throw AppError.notFound("Pedido no encontrado en este restaurante");
     if (pedido.estado === "cerrado") throw AppError.badRequest("La cuenta ya está cerrada");
 
     const [totalPagado, totalPagos] = await Promise.all([

@@ -67,72 +67,106 @@ enum PagoEstado {
 // MODELOS
 // ============================================================
 
+model Restaurant {
+  id        Int      @id @default(autoincrement()) @db.Integer
+  nombre    String   @db.VarChar(255)
+  direccion String?  @db.VarChar(500)
+  telefono  String?  @db.VarChar(50)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  users       User[]
+  mesas       Mesa[]
+  categorias  Categoria[]
+  productos   Producto[]
+  pedidos     Pedido[]
+
+  @@index([activo])
+  @@map("restaurantes")
+}
+
 model User {
-  id        Int        @id @default(autoincrement()) @db.Integer
-  name      String     @db.VarChar(255)
-  email     String     @unique @db.VarChar(255)
-  password  String     @db.VarChar(255)
-  role      UserRole   @default(mesero)
-  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime   @default(now()) @map("updated_at") @db.Timestamptz
+  id           Int      @id @default(autoincrement()) @db.Integer
+  restaurantId Int?     @map("restaurante_id") @db.Integer
+  name         String   @db.VarChar(255)
+  email        String   @db.VarChar(255)
+  password     String   @db.VarChar(255)
+  role         UserRole @default(mesero)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz
 
-  pedidos        Pedido[]
+  restaurant      Restaurant?     @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  pedidos         Pedido[]
   historialPedido HistorialPedido[]
-  historialMesa  HistorialMesa[]
+  historialMesa   HistorialMesa[]
 
+  @@unique([restaurantId, email])
+  @@index([restaurantId])
   @@map("users")
 }
 
 model Categoria {
-  id        Int      @id @default(autoincrement()) @db.Integer
-  nombre    String   @db.VarChar(100)
-  icono     String?  @db.VarChar(50)
-  activo    Boolean  @default(true)
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  id           Int      @id @default(autoincrement()) @db.Integer
+  restaurantId Int      @map("restaurante_id") @db.Integer
+  nombre       String   @db.VarChar(100)
+  icono        String?  @db.VarChar(50)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  productos Producto[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  productos  Producto[]
 
+  @@index([restaurantId])
   @@map("categorias")
 }
 
 model Producto {
-  id          Int      @id @default(autoincrement()) @db.Integer
-  categoriaId Int      @map("categoria_id") @db.Integer
-  nombre      String   @db.VarChar(200)
-  precio      Decimal  @db.Decimal(10, 2)
-  imagen      String?  @db.VarChar(255)
-  activo      Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  id           Int      @id @default(autoincrement()) @db.Integer
+  restaurantId Int      @map("restaurante_id") @db.Integer
+  categoriaId  Int      @map("categoria_id") @db.Integer
+  nombre       String   @db.VarChar(200)
+  precio       Decimal  @db.Decimal(10, 2)
+  imagen       String?  @db.VarChar(255)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
 
-  categoria    Categoria       @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
-  detalles     DetallePedido[]
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  categoria  Categoria  @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  detalles   DetallePedido[]
+
+  @@index([restaurantId])
   @@index([categoriaId])
   @@index([activo], type: Hash)
   @@map("productos")
 }
 
 model Mesa {
-  id        Int          @id @default(autoincrement()) @db.Integer
-  numero    Int          @unique @db.Integer
-  estado    MesaEstado   @default(libre)
-  createdAt DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  id           Int        @id @default(autoincrement()) @db.Integer
+  restaurantId Int        @map("restaurante_id") @db.Integer
+  numero       Int        @db.Integer
+  estado       MesaEstado @default(libre)
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz
 
-  pedidos        Pedido[]
-  historialMesa  HistorialMesa[]
+  restaurant    Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  pedidos       Pedido[]
+  historialMesa HistorialMesa[]
 
-  @@index([estado])
+  @@unique([restaurantId, numero])
+  @@index([restaurantId, estado])
   @@map("mesas")
 }
 
 model Pedido {
-  id        Int           @id @default(autoincrement()) @db.Integer
-  mesaId    Int           @map("mesa_id") @db.Integer
-  userId    Int           @map("user_id") @db.Integer
-  estado    PedidoEstado  @default(abierto)
-  total     Decimal       @default(0.00) @db.Decimal(10, 2)
-  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt DateTime      @default(now()) @map("updated_at") @db.Timestamptz
+  id           Int          @id @default(autoincrement()) @db.Integer
+  restaurantId Int          @map("restaurante_id") @db.Integer
+  mesaId       Int          @map("mesa_id") @db.Integer
+  userId       Int          @map("user_id") @db.Integer
+  estado       PedidoEstado @default(abierto)
+  total        Decimal      @default(0.00) @db.Decimal(10, 2)
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime     @default(now()) @map("updated_at") @db.Timestamptz
 
+  restaurant      Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   mesa            Mesa              @relation(fields: [mesaId], references: [id], onDelete: Restrict)
   user            User              @relation(fields: [userId], references: [id], onDelete: Restrict)
   detalles        DetallePedido[]
@@ -140,6 +174,8 @@ model Pedido {
   historialPedido HistorialPedido[]
   historialMesa   HistorialMesa[]
 
+  @@index([restaurantId])
+  @@index([restaurantId, estado])
   @@index([mesaId])
   @@index([userId])
   @@index([mesaId, estado])
@@ -218,8 +254,8 @@ model HistorialMesa {
   observacion    String?       @db.VarChar(500)
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz
 
-  mesa   Mesa   @relation(fields: [mesaId], references: [id], onDelete: Cascade)
-  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  mesa   Mesa    @relation(fields: [mesaId], references: [id], onDelete: Cascade)
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   pedido Pedido? @relation(fields: [pedidoId], references: [id], onDelete: SetNull)
 
   @@index([mesaId])

@@ -4,9 +4,9 @@ import { events } from "../../gateway/socket.gateway";
 import { PrintService } from "../print/print.service";
 
 export class PedidoService {
-  static async findById(id: number) {
-    const pedido = await prisma.pedido.findUnique({
-      where: { id },
+  static async findById(id: number, restaurantId: number) {
+    const pedido = await prisma.pedido.findFirst({
+      where: { id, restaurantId },
       include: {
         mesa: { select: { id: true, numero: true } },
         user: { select: { id: true, name: true } },
@@ -21,8 +21,8 @@ export class PedidoService {
     return pedido;
   }
 
-  static async iniciar(mesaId: number, userId: number) {
-    const mesa = await prisma.mesa.findUnique({ where: { id: mesaId } });
+  static async iniciar(mesaId: number, userId: number, restaurantId: number) {
+    const mesa = await prisma.mesa.findFirst({ where: { id: mesaId, restaurantId } });
     if (!mesa) throw AppError.notFound("Mesa no encontrada");
 
     const existente = await prisma.pedido.findFirst({
@@ -43,30 +43,31 @@ export class PedidoService {
     if (existente) return existente;
 
     const pedido = await prisma.pedido.create({
-      data: { mesaId, userId },
+      data: { mesaId, userId, restaurantId },
       include: {
         detalles: true,
         user: { select: { id: true, name: true } },
       },
     });
 
-    events.pedidoCreado(mesaId, {
+    events.pedidoCreado(restaurantId, {
       pedidoId: pedido.id,
       mesaId,
       numero: mesa.numero,
       userId,
       userName: pedido.user.name,
+      restaurantId,
     });
 
     return pedido;
   }
 
-  static async agregarItem(pedidoId: number, productoId: number, cantidad: number) {
-    const pedido = await prisma.pedido.findUnique({ where: { id: pedidoId } });
+  static async agregarItem(pedidoId: number, productoId: number, cantidad: number, restaurantId: number) {
+    const pedido = await prisma.pedido.findFirst({ where: { id: pedidoId, restaurantId } });
     if (!pedido) throw AppError.notFound("Pedido no encontrado");
     if (pedido.estado === "cerrado") throw AppError.badRequest("El pedido ya está cerrado");
 
-    const producto = await prisma.producto.findUnique({ where: { id: productoId } });
+    const producto = await prisma.producto.findFirst({ where: { id: productoId, restaurantId } });
     if (!producto) throw AppError.notFound("Producto no encontrado");
 
     // Verificar si es el primer item (para imprimir en cocina)
@@ -93,11 +94,12 @@ export class PedidoService {
       orderBy: { id: "asc" },
     });
 
-    events.pedidoItemAgregado(pedido.mesaId, {
+    events.pedidoItemAgregado(restaurantId, {
       pedidoId,
       detalle,
       items,
       total,
+      restaurantId,
     });
 
     // Imprimir en cocina al agregar el primer item
@@ -120,10 +122,13 @@ export class PedidoService {
     return { detalle, items, total };
   }
 
-  static async eliminarItem(detalleId: number) {
+  static async eliminarItem(detalleId: number, restaurantId: number) {
     const detalle = await prisma.detallePedido.findUnique({ where: { id: detalleId } });
     if (!detalle) throw AppError.notFound("Item no encontrado");
     if (detalle.entregado) throw AppError.badRequest("No se puede eliminar un item ya entregado");
+
+    const pedido = await prisma.pedido.findFirst({ where: { id: detalle.pedidoId, restaurantId } });
+    if (!pedido) throw AppError.notFound("Pedido no encontrado");
 
     const pedidoId = detalle.pedidoId;
 
@@ -137,22 +142,19 @@ export class PedidoService {
       orderBy: { id: "asc" },
     });
 
-    const pedido = await prisma.pedido.findUnique({ where: { id: pedidoId } });
-
-    if (pedido) {
-      events.pedidoItemAgregado(pedido.mesaId, {
-        pedidoId,
-        action: "item_eliminado",
-        items,
-        total,
-      });
-    }
+    events.pedidoItemAgregado(restaurantId, {
+      pedidoId,
+      action: "item_eliminado",
+      items,
+      total,
+      restaurantId,
+    });
 
     return { items, total };
   }
 
-  static async entregar(pedidoId: number) {
-    const pedido = await prisma.pedido.findUnique({ where: { id: pedidoId } });
+  static async entregar(pedidoId: number, restaurantId: number) {
+    const pedido = await prisma.pedido.findFirst({ where: { id: pedidoId, restaurantId } });
     if (!pedido) throw AppError.notFound("Pedido no encontrado");
     if (pedido.estado === "cerrado") throw AppError.badRequest("El pedido ya está cerrado");
 
@@ -166,20 +168,21 @@ export class PedidoService {
       data: { estado: "entregado" },
     });
 
-    events.pedidoEntregado(pedido.mesaId, {
+    events.pedidoEntregado(restaurantId, {
       pedidoId,
       estado: "entregado",
+      restaurantId,
     });
 
     return updated;
   }
 
-  static async listarVentas(filters: {
+  static async listarVentas(restaurantId: number, filters: {
     userId?: number;
     fechaDesde?: string;
     fechaHasta?: string;
   }) {
-    const where: any = { estado: "cerrado" };
+    const where: any = { restaurantId, estado: "cerrado" };
 
     if (filters.userId) where.userId = filters.userId;
 
@@ -203,7 +206,7 @@ export class PedidoService {
         orderBy: { createdAt: "desc" },
       }),
       prisma.user.findMany({
-        where: { role: "mesero" },
+        where: { role: "mesero", restaurantId },
         select: { id: true, name: true },
         orderBy: { name: "asc" },
       }),

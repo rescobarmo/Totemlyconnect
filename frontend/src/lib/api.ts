@@ -10,6 +10,10 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  const restId = localStorage.getItem("selectedRestaurantId");
+  if (restId) {
+    config.headers["x-restaurant-id"] = restId;
+  }
   return config;
 });
 
@@ -19,6 +23,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      localStorage.removeItem("selectedRestaurantId");
       window.location.href = "/login";
     }
     return Promise.reject(error);

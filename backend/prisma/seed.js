@@ -31,44 +31,54 @@ const productosData = [
 ];
 
 async function main() {
+  // Crear restaurante demo
+  const restaurant = await prisma.restaurant.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, nombre: "MiniFood Demo", direccion: "Av. Principal 123", telefono: "+56 9 1234 5678" },
+  });
+  console.log("Restaurante creado:", restaurant.nombre);
+
   const admin = await prisma.user.upsert({
-    where: { email: "admin@minifood.com" },
+    where: { restaurantId_email: { restaurantId: restaurant.id, email: "admin@minifood.com" } },
     update: {},
     create: {
       name: "Admin",
       email: "admin@minifood.com",
       password: await bcrypt.hash("123456", 10),
       role: "admin",
+      restaurantId: restaurant.id,
     },
   });
   console.log("Admin creado:", admin.email);
 
   const mesero = await prisma.user.upsert({
-    where: { email: "mesero@minifood.com" },
+    where: { restaurantId_email: { restaurantId: restaurant.id, email: "mesero@minifood.com" } },
     update: {},
     create: {
       name: "Mesero Demo",
       email: "mesero@minifood.com",
       password: await bcrypt.hash("123456", 10),
       role: "mesero",
+      restaurantId: restaurant.id,
     },
   });
   console.log("Mesero creado:", mesero.email);
 
   for (let i = 1; i <= 10; i++) {
     await prisma.mesa.upsert({
-      where: { numero: i },
+      where: { restaurantId_numero: { restaurantId: restaurant.id, numero: i } },
       update: {},
-      create: { numero: i, estado: "libre" },
+      create: { numero: i, estado: "libre", restaurantId: restaurant.id },
     });
   }
   console.log("10 mesas creadas");
 
-  const catCount = await prisma.categoria.count();
+  const catCount = await prisma.categoria.count({ where: { restaurantId: restaurant.id } });
   if (catCount === 0) {
     for (const cat of categoriasData) {
       const created = await prisma.categoria.create({
-        data: { nombre: cat.nombre, icono: cat.icono, activo: true },
+        data: { nombre: cat.nombre, icono: cat.icono, activo: true, restaurantId: restaurant.id },
       });
       console.log(`Categoría creada: ${created.nombre}`);
 
@@ -80,6 +90,7 @@ async function main() {
             nombre: prod.nombre,
             precio: prod.precio,
             activo: true,
+            restaurantId: restaurant.id,
           },
         });
         console.log(`  Producto: ${prod.nombre} $${prod.precio}`);

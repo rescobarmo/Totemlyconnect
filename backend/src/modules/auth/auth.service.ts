@@ -7,7 +7,7 @@ import { AuthUser } from "../../common/types";
 
 export class AuthService {
   static async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst({ where: { email } });
 
     if (!user) {
       throw AppError.unauthorized("Credenciales inválidas");
@@ -24,6 +24,7 @@ export class AuthService {
       name: user.name,
       email: user.email,
       role: user.role,
+      restaurantId: user.restaurantId,
     };
 
     const token = jwt.sign(payload, env.JWT_SECRET, {
@@ -36,8 +37,8 @@ export class AuthService {
     };
   }
 
-  static async register(name: string, email: string, password: string) {
-    const exists = await prisma.user.findUnique({ where: { email } });
+  static async register(name: string, email: string, password: string, restaurantId?: number) {
+    const exists = await prisma.user.findFirst({ where: { email } });
 
     if (exists) {
       throw AppError.conflict("El email ya está registrado");
@@ -51,12 +52,14 @@ export class AuthService {
         email,
         password: hashed,
         role: "mesero",
+        restaurantId: restaurantId ?? null,
       },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
+        restaurantId: true,
         createdAt: true,
       },
     });
@@ -72,6 +75,7 @@ export class AuthService {
         name: true,
         email: true,
         role: true,
+        restaurantId: true,
         createdAt: true,
       },
     });
@@ -83,22 +87,24 @@ export class AuthService {
     return user;
   }
 
-  static async listar() {
+  static async listar(restaurantId?: number) {
+    const where = restaurantId ? { restaurantId } : {};
     return prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      where,
+      select: { id: true, name: true, email: true, role: true, restaurantId: true, createdAt: true },
       orderBy: { id: "asc" },
     });
   }
 
-  static async crear(name: string, email: string, password: string) {
-    const exists = await prisma.user.findUnique({ where: { email } });
+  static async crear(name: string, email: string, password: string, restaurantId?: number) {
+    const exists = await prisma.user.findFirst({ where: { email } });
     if (exists) throw AppError.conflict("El email ya está registrado");
 
     const hashed = await bcrypt.hash(password, 12);
 
     return prisma.user.create({
-      data: { name, email, password: hashed, role: "mesero" },
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      data: { name, email, password: hashed, role: "mesero", restaurantId: restaurantId ?? null },
+      select: { id: true, name: true, email: true, role: true, restaurantId: true, createdAt: true },
     });
   }
 }

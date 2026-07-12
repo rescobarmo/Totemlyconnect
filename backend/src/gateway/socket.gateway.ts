@@ -15,6 +15,15 @@ export function initSocket(httpServer: HttpServer): Server {
   io.on("connection", (socket: Socket) => {
     console.log(`[Socket] Client connected: ${socket.id}`);
 
+    socket.on("join:restaurant", (restaurantId: number) => {
+      socket.join(`restaurant:${restaurantId}`);
+      console.log(`[Socket] ${socket.id} joined restaurant:${restaurantId}`);
+    });
+
+    socket.on("leave:restaurant", (restaurantId: number) => {
+      socket.leave(`restaurant:${restaurantId}`);
+    });
+
     socket.on("join:mesa", (mesaId: number) => {
       socket.join(`mesa:${mesaId}`);
       console.log(`[Socket] ${socket.id} joined mesa:${mesaId}`);
@@ -47,28 +56,39 @@ export function getIO(): Server {
 // ============================================================
 
 export const events = {
-  mesaEstado(mesaId: number, data: { mesaId: number; estado: string; numero: number }) {
-    getIO().emit("mesa:estado", data);
+  mesaEstado(mesaId: number, data: { mesaId: number; estado: string; numero: number }, restaurantId?: number) {
+    const emitTo = [getIO(), getIO().to(`mesa:${mesaId}`)];
+    if (restaurantId) emitTo.push(getIO().to(`restaurant:${restaurantId}`));
+    emitTo.forEach(e => e.emit("mesa:estado", data));
   },
 
-  pedidoCreado(mesaId: number, data: any) {
+  pedidoCreado(mesaId: number, data: any, restaurantId?: number) {
     getIO().to(`mesa:${mesaId}`).emit("pedido:creado", data);
     getIO().to("cocina").emit("pedido:nuevo", data);
+    if (restaurantId) getIO().to(`restaurant:${restaurantId}`).emit("pedido:nuevo", { ...data, restaurantId });
   },
 
-  pedidoItemAgregado(mesaId: number, data: any) {
-    getIO().to(`mesa:${mesaId}`).emit("pedido:item_agregado", data);
+  pedidoItemAgregado(mesaId: number, data: any, restaurantId?: number) {
+    const emitTo = [getIO().to(`mesa:${mesaId}`)];
+    if (restaurantId) emitTo.push(getIO().to(`restaurant:${restaurantId}`));
+    emitTo.forEach(e => e.emit("pedido:item_agregado", data));
   },
 
-  pedidoEntregado(mesaId: number, data: any) {
-    getIO().to(`mesa:${mesaId}`).emit("pedido:entregado", data);
+  pedidoEntregado(mesaId: number, data: any, restaurantId?: number) {
+    const emitTo = [getIO().to(`mesa:${mesaId}`)];
+    if (restaurantId) emitTo.push(getIO().to(`restaurant:${restaurantId}`));
+    emitTo.forEach(e => e.emit("pedido:entregado", data));
   },
 
-  pedidoCerrado(mesaId: number, data: any) {
-    getIO().to(`mesa:${mesaId}`).emit("pedido:cerrado", data);
+  pedidoCerrado(mesaId: number, data: any, restaurantId?: number) {
+    const emitTo = [getIO().to(`mesa:${mesaId}`)];
+    if (restaurantId) emitTo.push(getIO().to(`restaurant:${restaurantId}`));
+    emitTo.forEach(e => e.emit("pedido:cerrado", data));
   },
 
-  pagoProcesado(mesaId: number, data: any) {
-    getIO().to(`mesa:${mesaId}`).emit("pago:procesado", data);
+  pagoProcesado(mesaId: number, data: any, restaurantId?: number) {
+    const emitTo = [getIO().to(`mesa:${mesaId}`)];
+    if (restaurantId) emitTo.push(getIO().to(`restaurant:${restaurantId}`));
+    emitTo.forEach(e => e.emit("pago:procesado", data));
   },
 };

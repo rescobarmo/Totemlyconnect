@@ -5,10 +5,12 @@ export interface AuthUser {
   name: string;
   email: string;
   role: "admin" | "mesero";
+  restaurantId: number | null;
 }
 
 export interface AuthRequest extends Request {
   user?: AuthUser;
+  restaurantId?: number;
 }
 
 export interface ApiResponse<T = unknown> {

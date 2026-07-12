@@ -6,6 +6,7 @@ import XLSX from "xlsx";
 import { ProductoService } from "./producto.service";
 import { authMiddleware } from "../../common/middleware/auth.middleware";
 import { adminMiddleware } from "../../common/middleware/admin.middleware";
+import { tenantMiddleware } from "../../common/middleware/tenant.middleware";
 import { AuthRequest } from "../../common/types";
 import prisma from "../../config/database";
 
@@ -23,81 +24,82 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-router.get("/", authMiddleware, async (_req, res: Response, next: NextFunction) => {
+router.get("/", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const productos = await ProductoService.findAll(true);
+    const productos = await ProductoService.findAll(req.restaurantId!, true);
     res.json({ success: true, data: productos });
   } catch (error) { next(error); }
 });
 
-router.get("/activos", authMiddleware, async (_req, res: Response, next: NextFunction) => {
+router.get("/activos", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const productos = await ProductoService.findAll(false);
+    const productos = await ProductoService.findAll(req.restaurantId!, false);
     res.json({ success: true, data: productos });
   } catch (error) { next(error); }
 });
 
-router.get("/agrupados", authMiddleware, async (_req, res: Response, next: NextFunction) => {
+router.get("/agrupados", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const data = await ProductoService.findGrouped();
+    const data = await ProductoService.findGrouped(req.restaurantId!);
     res.json({ success: true, data });
   } catch (error) { next(error); }
 });
 
-router.get("/:id", authMiddleware, async (req, res: Response, next: NextFunction) => {
+router.get("/:id", authMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.findById(Number(req.params.id));
+    const prod = await ProductoService.findById(req.restaurantId!, Number(req.params.id));
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
-router.post("/", authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
+router.post("/", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.create(req.body);
+    const prod = await ProductoService.create(req.restaurantId!, req.body);
     res.status(201).json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
-router.put("/:id", authMiddleware, adminMiddleware, async (req, res: Response, next: NextFunction) => {
+router.put("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.update(Number(req.params.id), req.body);
+    const prod = await ProductoService.update(req.restaurantId!, Number(req.params.id), req.body);
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
-router.patch("/:id/toggle", authMiddleware, adminMiddleware, async (req, res: Response, next: NextFunction) => {
+router.patch("/:id/toggle", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const prod = await ProductoService.toggleActivo(Number(req.params.id));
+    const prod = await ProductoService.toggleActivo(req.restaurantId!, Number(req.params.id));
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
-router.delete("/:id", authMiddleware, adminMiddleware, async (req, res: Response, next: NextFunction) => {
+router.delete("/:id", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    await ProductoService.remove(Number(req.params.id));
+    await ProductoService.remove(req.restaurantId!, Number(req.params.id));
     res.json({ success: true, message: "Producto eliminado" });
   } catch (error) { next(error); }
 });
 
-router.post("/:id/imagen", authMiddleware, adminMiddleware, upload.single("imagen"), async (req, res: Response, next: NextFunction) => {
+router.post("/:id/imagen", authMiddleware, adminMiddleware, tenantMiddleware, upload.single("imagen"), async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       res.status(400).json({ success: false, error: "No se envió archivo" });
       return;
     }
     const imageUrl = `/uploads/productos/${req.file.filename}`;
-    const prod = await ProductoService.updateImage(Number(req.params.id), imageUrl);
+    const prod = await ProductoService.updateImage(req.restaurantId!, Number(req.params.id), imageUrl);
     res.json({ success: true, data: prod });
   } catch (error) { next(error); }
 });
 
-router.post("/importar-excel", authMiddleware, adminMiddleware, upload.single("archivo"), async (req: AuthRequest, res: Response, next: NextFunction) => {
+router.post("/importar-excel", authMiddleware, adminMiddleware, tenantMiddleware, upload.single("archivo"), async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.file) {
       res.status(400).json({ success: false, error: "No se envió archivo" });
       return;
     }
 
+    const restaurantId = req.restaurantId!;
     const workbook = XLSX.readFile(req.file.path);
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json<Record<string, any>>(sheet);
@@ -116,9 +118,9 @@ router.post("/importar-excel", authMiddleware, adminMiddleware, upload.single("a
           continue;
         }
 
-        let categoria = await prisma.categoria.findFirst({ where: { nombre: categoriaNombre } });
+        let categoria = await prisma.categoria.findFirst({ where: { nombre: categoriaNombre, restaurantId } });
         if (!categoria) {
-          categoria = await prisma.categoria.create({ data: { nombre: categoriaNombre } });
+          categoria = await prisma.categoria.create({ data: { nombre: categoriaNombre, restaurantId } });
         }
 
         await prisma.producto.create({
@@ -126,6 +128,7 @@ router.post("/importar-excel", authMiddleware, adminMiddleware, upload.single("a
             nombre,
             precio,
             categoriaId: categoria.id,
+            restaurantId,
             activo: true,
           },
         });

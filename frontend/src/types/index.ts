@@ -3,6 +3,15 @@ export interface AuthUser {
   name: string;
   email: string;
   role: "admin" | "mesero";
+  restaurantId?: number | null;
+}
+
+export interface Restaurant {
+  id: number;
+  nombre: string;
+  direccion?: string | null;
+  telefono?: string | null;
+  activo: boolean;
 }
 
 export interface Categoria {
