@@ -23,12 +23,9 @@ async function main() {
   // Static files - uploads
   app.use("/uploads", express.static(path.resolve(__dirname, "../../uploads")));
 
-  // En producción, servir el frontend compilado
+  // En producción, servir estáticos del frontend
   if (env.NODE_ENV === "production") {
     app.use(express.static(path.resolve(__dirname, "../../frontend/dist")));
-    app.get("*", (_req, res) => {
-      res.sendFile(path.resolve(__dirname, "../../frontend/dist/index.html"));
-    });
   }
 
   // Socket.io
@@ -37,6 +34,13 @@ async function main() {
 
   // Routes
   app.use("/api", routes);
+
+  // SPA fallback (después de las rutas API)
+  if (env.NODE_ENV === "production") {
+    app.get("*", (_req, res) => {
+      res.sendFile(path.resolve(__dirname, "../../frontend/dist/index.html"));
+    });
+  }
 
   // Error handler
   app.use(errorMiddleware);
