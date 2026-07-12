@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "cd backend && npm install && npx prisma generate && npx prisma db push && npx prisma db seed && npm run build && cd ../frontend && npm install && npm run build",
+    "build": "cd backend && npm install && npx prisma generate && npx prisma db push --accept-data-loss && npx prisma db seed && npm run build && cd ../frontend && npm install && npm run build",
     "start": "cd backend && node dist/main.js",
     "seed": "cd backend && node prisma/seed.js"
   }
