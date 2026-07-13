@@ -6,9 +6,9 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Mesa } from "@/types";
 
 const estadoColors: Record<string, string> = {
-  libre: "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200",
-  ocupada: "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200",
-  cuenta_cerrada: "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-200",
+  libre: "bg-emerald-400 hover:bg-emerald-500 text-white shadow-emerald-200",
+  ocupada: "bg-rose-400 hover:bg-rose-500 text-white shadow-rose-200",
+  cuenta_cerrada: "bg-blue-400 hover:bg-blue-500 text-white shadow-blue-200",
 };
 
 const estadoLabels: Record<string, string> = {
@@ -88,7 +88,7 @@ export default function MesasPage() {
             Libre
           </span>
           <span className="flex items-center gap-1 sm:gap-1.5">
-            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500" />
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-rose-400" />
             Ocupada
           </span>
           <span className="flex items-center gap-1 sm:gap-1.5">
