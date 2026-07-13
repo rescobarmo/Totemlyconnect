@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { useSocket } from "@/lib/socket";
@@ -17,6 +17,8 @@ export default function PedidoPage() {
   const [loading, setLoading] = useState(true);
   const [showCart, setShowCart] = useState(false);
   const [solicitado, setSolicitado] = useState(false);
+  const [itemsRemovibles, setItemsRemovibles] = useState<Set<number>>(new Set());
+  const itemsAlSolicitar = useRef<Set<number>>(new Set());
 
   useEffect(() => {
     loadData();
@@ -74,7 +76,16 @@ export default function PedidoPage() {
         cantidad: 1,
       });
       if (data.success) {
-        setItems(data.data.items);
+        const nuevosItems = data.data.items as DetallePedido[];
+        if (solicitado) {
+          const nuevosIds = nuevosItems
+            .filter((i) => !itemsAlSolicitar.current.has(i.id!))
+            .map((i) => i.id!);
+          if (nuevosIds.length > 0) {
+            setItemsRemovibles((prev) => new Set([...prev, ...nuevosIds]));
+          }
+        }
+        setItems(nuevosItems);
         setPedido((p) => (p ? { ...p, total: data.data.total } : p));
       }
     } catch (err: any) {
@@ -107,6 +118,7 @@ export default function PedidoPage() {
 
   const pedir = () => {
     if (!pedido) return;
+    itemsAlSolicitar.current = new Set(items.filter(i => i.id).map(i => i.id!));
     setSolicitado(true);
     socket.emit("pedir", { pedidoId: pedido.id, mesaId: pedido.mesaId, items: items.filter(i => !i.entregado) });
   };
@@ -222,7 +234,7 @@ export default function PedidoPage() {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                          {!item.entregado && !solicitado && (
+                          {!item.entregado && (!solicitado || itemsRemovibles.has(item.id!)) && (
                             <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                           )}
                         </div>
@@ -260,7 +272,7 @@ export default function PedidoPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                      {!item.entregado && !solicitado && (
+                      {!item.entregado && (!solicitado || itemsRemovibles.has(item.id!)) && (
                         <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                       )}
                     </div>
