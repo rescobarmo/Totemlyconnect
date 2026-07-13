@@ -30,6 +30,8 @@ export default function PedidoPage() {
       if (data.pedidoId === Number(pedidoId)) {
         setItems(data.items);
         setPedido((p) => (p ? { ...p, total: data.total } : p));
+        const noEntregados = data.items.filter((i: any) => !i.entregado);
+        if (noEntregados.length > 0) setSolicitado(false);
       }
     });
     socket.on("pedido:entregado", (data: any) => {
@@ -56,7 +58,12 @@ export default function PedidoPage() {
       if (pedidoRes.data.success && pedidoRes.data.data) {
         const p = pedidoRes.data.data;
         setPedido(p);
-        setItems(p.detalles || []);
+        const detalles = p.detalles || [];
+        setItems(detalles);
+        itemsAlSolicitar.current = new Set();
+        setItemsRemovibles(new Set());
+        const todosEntregados = detalles.length > 0 && detalles.every((i: any) => i.entregado);
+        setSolicitado(todosEntregados);
       }
       if (catRes.data.success) setCategorias(catRes.data.data);
       if (prodRes.data.success) setProductos(prodRes.data.data.flatMap((c: any) => c.productos));
