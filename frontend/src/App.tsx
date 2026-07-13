@@ -12,6 +12,7 @@ import MantenedorMesasPage from "@/pages/MantenedorMesasPage";
 import AdminUsuariosPage from "@/pages/AdminUsuariosPage";
 import KitchenDisplayPage from "@/pages/KitchenDisplayPage";
 import RestaurantesPage from "@/pages/admin/RestaurantesPage";
+import AdminsPorRestaurantePage from "@/pages/admin/AdminsPorRestaurantePage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/admin/mesas" element={<ProtectedRoute><MantenedorMesasPage /></ProtectedRoute>} />
         <Route path="/admin/usuarios" element={<ProtectedRoute><AdminUsuariosPage /></ProtectedRoute>} />
         <Route path="/admin/restaurantes" element={<ProtectedRoute><RestaurantesPage /></ProtectedRoute>} />
+        <Route path="/admin/admins-por-restaurante" element={<ProtectedRoute><AdminsPorRestaurantePage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

@@ -18,7 +18,7 @@ export default function DashboardPage() {
           ...(user?.role === "superadmin"
             ? [
                 { title: "Restaurantes", desc: "Gestionar locales", href: "/admin/restaurantes", icon: "🏪", color: "from-teal-600 to-teal-700" },
-                { title: "Adm. por Restaurante", desc: "Ver admins de cada local", href: "/admin/restaurantes", icon: "👥", color: "from-violet-600 to-violet-700" },
+                { title: "Adm. por Restaurante", desc: "Ver admins de cada local", href: "/admin/admins-por-restaurante", icon: "👥", color: "from-violet-600 to-violet-700" },
               ]
             : []),
         ]

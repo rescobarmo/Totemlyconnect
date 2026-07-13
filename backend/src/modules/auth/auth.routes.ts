@@ -79,4 +79,15 @@ router.delete("/usuarios/:id", authMiddleware, adminMiddleware, superadminMiddle
   }
 });
 
+// Superadmin: cambiar rol de usuario
+router.patch("/usuarios/:id/role", authMiddleware, adminMiddleware, superadminMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const { role } = req.body;
+    const result = await AuthService.updateRole(Number(req.params.id), role);
+    res.json({ success: true, data: result });
+  } catch (error: any) {
+    res.status(error.statusCode || 500).json({ success: false, error: error.message });
+  }
+});
+
 export default router;
