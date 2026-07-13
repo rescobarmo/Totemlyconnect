@@ -38,43 +38,50 @@ export default function AdminUsuariosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate("/")} className="text-slate-400 hover:text-white">←</button>
-            <h1 className="text-2xl font-bold text-white">👤 Usuarios</h1>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/")} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-lg sm:text-xl">👤</span>
+            <h1 className="text-base sm:text-lg font-bold text-gray-900">Usuarios</h1>
           </div>
-          <button onClick={() => setModal(true)} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">+ Nuevo Mesero</button>
+          <button onClick={() => setModal(true)} className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-all active:scale-[0.98]">+ Nuevo Mesero</button>
         </div>
-      </header>
+      </nav>
 
-      <main className="max-w-6xl mx-auto p-6">
-        <div className="bg-slate-800 rounded-xl overflow-hidden">
+      <main className="mx-auto mt-4 sm:mt-6 max-w-6xl px-3 sm:px-4 pb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left px-4 py-3 text-slate-400 text-sm">Nombre</th>
-                <th className="text-left px-4 py-3 text-slate-400 text-sm">Email</th>
-                <th className="text-left px-4 py-3 text-slate-400 text-sm">Rol</th>
-                <th className="text-left px-4 py-3 text-slate-400 text-sm">Creado</th>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="text-left px-3 sm:px-4 py-2.5 text-gray-500 text-xs sm:text-sm font-medium">Nombre</th>
+                <th className="text-left px-3 sm:px-4 py-2.5 text-gray-500 text-xs sm:text-sm font-medium">Email</th>
+                <th className="text-left px-3 sm:px-4 py-2.5 text-gray-500 text-xs sm:text-sm font-medium">Rol</th>
+                <th className="text-left px-3 sm:px-4 py-2.5 text-gray-500 text-xs sm:text-sm font-medium hidden sm:table-cell">Creado</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={4} className="text-center py-8 text-slate-500">Cargando...</td></tr>
+                <tr><td colSpan={4} className="text-center py-8 text-gray-400 text-sm">Cargando...</td></tr>
               ) : usuarios.length === 0 ? (
-                <tr><td colSpan={4} className="text-center py-8 text-slate-500">No hay usuarios</td></tr>
+                <tr><td colSpan={4} className="text-center py-8 text-gray-400 text-sm">No hay usuarios</td></tr>
               ) : usuarios.map((u) => (
-                <tr key={u.id} className="border-b border-slate-700/50">
-                  <td className="px-4 py-3 text-white font-medium">{u.name}</td>
-                  <td className="px-4 py-3 text-slate-300">{u.email}</td>
-                  <td className="px-4 py-3">
-                    <span className={`px-3 py-1 rounded text-xs font-medium ${u.role === "superadmin" ? "bg-purple-500/20 text-purple-400" : u.role === "admin" ? "bg-amber-500/20 text-amber-400" : "bg-blue-500/20 text-blue-400"}`}>
-                      {u.role}
-                    </span>
+                <tr key={u.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                  <td className="px-3 sm:px-4 py-3 text-gray-900 font-medium text-sm">{u.name}</td>
+                  <td className="px-3 sm:px-4 py-3 text-gray-500 text-sm">{u.email}</td>
+                  <td className="px-3 sm:px-4 py-3">
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                      u.role === "superadmin" ? "bg-purple-100 text-purple-700" :
+                      u.role === "admin" ? "bg-amber-100 text-amber-700" :
+                      "bg-indigo-100 text-indigo-700"
+                    }`}>{u.role}</span>
                   </td>
-                  <td className="px-4 py-3 text-slate-400 text-sm">{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="px-3 sm:px-4 py-3 text-gray-400 text-xs sm:text-sm hidden sm:table-cell">{new Date(u.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -83,17 +90,20 @@ export default function AdminUsuariosPage() {
       </main>
 
       {modal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setModal(false)}>
-          <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-white text-xl font-bold mb-4">Nuevo Mesero</h2>
-            <div className="space-y-4">
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre" className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white" />
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white" />
-              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Contraseña" className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white" />
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center" onClick={() => setModal(false)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md shadow-xl sm:mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between rounded-t-2xl">
+              <h2 className="text-lg font-bold text-gray-900">Nuevo Mesero</h2>
+              <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none w-8 h-8 flex items-center justify-center">&times;</button>
             </div>
-            <div className="flex gap-3 mt-6">
-              <button onClick={() => setModal(false)} className="flex-1 py-3 bg-slate-700 text-white rounded-lg">Cancelar</button>
-              <button onClick={crear} disabled={!form.name || !form.email || !form.password} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-medium rounded-lg">Crear</button>
+            <div className="px-4 py-4 space-y-4">
+              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nombre" className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+              <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Contraseña" className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+            </div>
+            <div className="px-4 py-4 border-t border-gray-100 flex gap-3">
+              <button onClick={() => setModal(false)} className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-sm transition-all active:scale-[0.98]">Cancelar</button>
+              <button onClick={crear} disabled={!form.name || !form.email || !form.password} className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-medium rounded-lg text-sm transition-all active:scale-[0.98]">Crear</button>
             </div>
           </div>
         </div>

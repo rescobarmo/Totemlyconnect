@@ -18,12 +18,10 @@ export default function PagoPage() {
   const [debug, setDebug] = useState("");
   const inicializado = useRef(false);
 
-  // División equitativa (persistidos en localStorage)
   const [personas, setPersonas] = useState(1);
   const [propinaPct, setPropinaPct] = useState(() => Number(localStorage.getItem("pago_propina") || 10));
   const [metodo, setMetodo] = useState(() => localStorage.getItem("pago_metodo") || "tarjeta");
 
-  // División por items
   const [mode, setMode] = useState<"equitativo" | "por_items">("equitativo");
   const [metodoMap, setMetodoMap] = useState<Record<number, string>>({});
 
@@ -160,54 +158,70 @@ export default function PagoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <header className="bg-slate-800 border-b border-slate-700 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate(`/pedido/${pedidoId}`)} className="text-slate-400 hover:text-white text-lg">←</button>
-            <div>
-              <h1 className="text-base sm:text-xl font-bold text-white">Pago · Pedido #{pedidoId}</h1>
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate(`/pedido/${pedidoId}`)} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-lg sm:text-xl">💳</span>
+            <h1 className="text-base sm:text-lg font-bold text-gray-900">Pago · Pedido #{pedidoId}</h1>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400">Total</p>
-            <p className="text-xl sm:text-2xl font-bold text-emerald-400">${Number(pedido?.total || 0).toLocaleString()}</p>
+            <p className="text-xs text-gray-400">Total</p>
+            <p className="text-base sm:text-lg font-bold text-emerald-600">${Number(pedido?.total || 0).toLocaleString()}</p>
           </div>
         </div>
-      </header>
+      </nav>
 
-      {debug && <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-2"><p className="text-xs text-amber-400 bg-slate-800 rounded px-3 py-2">{debug}</p></div>}
+      {debug && <div className="max-w-4xl mx-auto px-3 sm:px-4 pt-2"><p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">{debug}</p></div>}
 
-      <main className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-        {/* Resumen */}
-        <div className="bg-slate-800 rounded-xl p-4 sm:p-6 grid grid-cols-3 gap-3 text-center">
-          <div className="bg-slate-700/50 rounded-lg p-3 sm:p-4"><p className="text-slate-400 text-sm sm:text-base">Subtotal</p><p className="text-white font-bold text-lg sm:text-2xl">${Number(pedido?.total || 0).toLocaleString()}</p></div>
-          <div className="bg-slate-700/50 rounded-lg p-3 sm:p-4"><p className="text-slate-400 text-sm sm:text-base">Pagado</p><p className="text-emerald-400 font-bold text-lg sm:text-2xl">${totalPagado.toLocaleString()}</p></div>
-          <div className="bg-slate-700/50 rounded-lg p-3 sm:p-4"><p className="text-slate-400 text-sm sm:text-base">Pendiente</p><p className={`font-bold text-lg sm:text-2xl ${saldo > 0 ? "text-amber-400" : "text-emerald-400"}`}>${Math.max(0, saldo).toLocaleString()}</p></div>
+      <main className="mx-auto mt-4 sm:mt-6 max-w-4xl px-3 sm:px-4 pb-8 space-y-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-gray-500 text-xs sm:text-sm">Subtotal</p>
+              <p className="text-gray-900 font-bold text-base sm:text-xl">${Number(pedido?.total || 0).toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-gray-500 text-xs sm:text-sm">Pagado</p>
+              <p className="text-emerald-600 font-bold text-base sm:text-xl">${totalPagado.toLocaleString()}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 sm:p-4 text-center">
+              <p className="text-gray-500 text-xs sm:text-sm">Pendiente</p>
+              <p className={`font-bold text-base sm:text-xl ${saldo > 0 ? "text-amber-600" : "text-emerald-600"}`}>${Math.max(0, saldo).toLocaleString()}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Dividir */}
         {pedido?.estado !== "cerrado" && (
-          <div className="bg-slate-800 rounded-xl p-4 sm:p-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
             <div className="flex gap-2 mb-4">
-              <button onClick={() => setMode("equitativo")} className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium ${mode === "equitativo" ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300"}`}>Equitativo</button>
-              <button onClick={() => setMode("por_items")} className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium ${mode === "por_items" ? "bg-blue-600 text-white" : "bg-slate-700 text-slate-300"}`}>Por Items</button>
+              <button onClick={() => setMode("equitativo")} className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] ${
+                mode === "equitativo" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}>Equitativo</button>
+              <button onClick={() => setMode("por_items")} className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-medium transition-all active:scale-[0.98] ${
+                mode === "por_items" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}>Por Items</button>
             </div>
 
             {mode === "equitativo" && (
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="text-xs sm:text-sm text-slate-400">Personas</label>
-                    <select value={personas} onChange={(e) => setPersonas(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm">
+                    <label className="text-xs sm:text-sm text-gray-500">Personas</label>
+                    <select value={personas} onChange={(e) => setPersonas(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                       {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                         <option key={n} value={n}>{n} {n === 1 ? "persona" : "personas"}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs sm:text-sm text-slate-400">Propina %</label>
-                    <select value={propinaPct} onChange={(e) => setPropinaPct(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm">
+                    <label className="text-xs sm:text-sm text-gray-500">Propina %</label>
+                    <select value={propinaPct} onChange={(e) => setPropinaPct(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                       <option value={0}>0%</option>
                       <option value={5}>5%</option>
                       <option value={10}>10%</option>
@@ -218,7 +232,7 @@ export default function PagoPage() {
                     </select>
                   </div>
                 </div>
-                <button onClick={dividirEquitativo} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm sm:text-base">
+                <button onClick={dividirEquitativo} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition-all active:scale-[0.98]">
                   Dividir en {personas} persona{personas > 1 ? "s" : ""}
                 </button>
               </div>
@@ -228,16 +242,16 @@ export default function PagoPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="text-xs sm:text-sm text-slate-400">Personas</label>
-                    <select value={personas} onChange={(e) => setPersonas(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm">
+                    <label className="text-xs sm:text-sm text-gray-500">Personas</label>
+                    <select value={personas} onChange={(e) => setPersonas(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                       {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                         <option key={n} value={n}>{n} {n === 1 ? "persona" : "personas"}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs sm:text-sm text-slate-400">Propina %</label>
-                    <select value={propinaPct} onChange={(e) => setPropinaPct(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white text-sm">
+                    <label className="text-xs sm:text-sm text-gray-500">Propina %</label>
+                    <select value={propinaPct} onChange={(e) => setPropinaPct(Number(e.target.value))} className="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                       <option value={0}>0%</option>
                       <option value={5}>5%</option>
                       <option value={10}>10%</option>
@@ -248,7 +262,7 @@ export default function PagoPage() {
                     </select>
                   </div>
                 </div>
-                <button onClick={dividirEquitativo} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm sm:text-base">
+                <button onClick={dividirEquitativo} className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition-all active:scale-[0.98]">
                   Dividir en {personas} persona{personas > 1 ? "s" : ""}
                 </button>
               </div>
@@ -256,36 +270,35 @@ export default function PagoPage() {
           </div>
         )}
 
-        {/* Pagos Pendientes */}
         {pendientes.length > 0 && (
-          <div className="bg-slate-800 rounded-xl p-4 sm:p-6">
-            <h3 className="text-white font-bold mb-4 text-sm sm:text-base">Detalle de Pagos</h3>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-gray-900 font-bold mb-4 text-sm sm:text-base">Detalle de Pagos</h3>
             <div className="space-y-3">
               {pendientes.map((pago) => (
-                <div key={pago.id} className="bg-slate-700 rounded-lg p-3 sm:p-4">
+                <div key={pago.id} className="bg-gray-50 rounded-lg p-3 sm:p-4">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-white font-medium text-sm sm:text-base">${Number(pago.monto).toLocaleString()}</p>
-                      <p className="text-slate-400 text-xs">{pago.tipoDivision}</p>
-                      {itemsDePago(pago) && <p className="text-slate-500 text-xs mt-1 truncate">{itemsDePago(pago)}</p>}
+                      <p className="text-gray-900 font-medium text-sm sm:text-base">${Number(pago.monto).toLocaleString()}</p>
+                      <p className="text-gray-400 text-xs">{pago.tipoDivision}</p>
+                      {itemsDePago(pago) && <p className="text-gray-400 text-xs mt-1 truncate">{itemsDePago(pago)}</p>}
                     </div>
                     {pago.estado === "pendiente" ? (
                       <div className="flex items-center gap-2 shrink-0">
                         <select
                           value={metodoMap[pago.id] || pago.metodo}
                           onChange={(e) => setMetodoMap((prev) => ({ ...prev, [pago.id]: e.target.value }))}
-                          className="px-2 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white text-xs sm:text-sm"
+                          className="px-2 py-1.5 bg-white border border-gray-300 rounded-lg text-gray-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         >
                           <option value="tarjeta">Tarjeta</option>
                           <option value="efectivo">Efectivo</option>
                           <option value="transferencia">Transferencia</option>
                         </select>
-                        <button onClick={() => procesarPago(pago.id)} disabled={processing === pago.id} className="px-4 sm:px-6 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-800 text-white text-xs sm:text-sm font-medium rounded-lg transition whitespace-nowrap">
+                        <button onClick={() => procesarPago(pago.id)} disabled={processing === pago.id} className="px-4 sm:px-5 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white text-xs sm:text-sm font-medium rounded-lg transition-all active:scale-[0.98] whitespace-nowrap">
                           {processing === pago.id ? "..." : "Cobrar"}
                         </button>
                       </div>
                     ) : (
-                      <span className="px-3 sm:px-4 py-2 bg-emerald-600/30 text-emerald-400 text-xs sm:text-sm font-medium rounded-lg whitespace-nowrap">
+                      <span className="px-3 sm:px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs sm:text-sm font-medium rounded-lg whitespace-nowrap">
                         {metodoLabel(pago.metodo)} · Pagado
                       </span>
                     )}
@@ -296,20 +309,19 @@ export default function PagoPage() {
           </div>
         )}
 
-        {/* Historial de rechazados */}
         {pagos.filter(p => p.estado === "rechazado").length > 0 && (
-          <div className="bg-slate-800 rounded-xl p-4 sm:p-6">
-            <h3 className="text-white font-bold mb-4 text-sm sm:text-base">Rechazados</h3>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+            <h3 className="text-gray-900 font-bold mb-4 text-sm sm:text-base">Rechazados</h3>
             <div className="space-y-2">
               {pagos.filter(p => p.estado === "rechazado").map((pago) => (
-                <div key={pago.id} className="flex items-center gap-3 p-3 bg-slate-700/50 rounded-lg">
-                  <span className="w-2 h-2 rounded-full bg-red-400 shrink-0"></span>
+                <div key={pago.id} className="flex items-center gap-3 p-3 bg-red-50 rounded-lg">
+                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0"></span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-xs sm:text-sm">${Number(pago.monto).toLocaleString()} · {metodoLabel(pago.metodo)}</p>
-                    {itemsDePago(pago) && <p className="text-slate-500 text-xs truncate">{itemsDePago(pago)}</p>}
-                    {pago.transaccionId && <p className="text-slate-500 text-xs truncate">{pago.transaccionId}</p>}
+                    <p className="text-gray-900 text-xs sm:text-sm">${Number(pago.monto).toLocaleString()} · {metodoLabel(pago.metodo)}</p>
+                    {itemsDePago(pago) && <p className="text-gray-400 text-xs truncate">{itemsDePago(pago)}</p>}
+                    {pago.transaccionId && <p className="text-gray-400 text-xs truncate">{pago.transaccionId}</p>}
                   </div>
-                  <span className="text-xs font-medium px-2 py-1 rounded bg-red-500/20 text-red-400 shrink-0">
+                  <span className="text-xs font-medium px-2 py-1 rounded bg-red-100 text-red-600 shrink-0">
                     rechazado
                   </span>
                 </div>
@@ -318,9 +330,8 @@ export default function PagoPage() {
           </div>
         )}
 
-        {/* Cerrar cuenta */}
         {puedeCerrar && pedido?.estado !== "cerrado" && (
-          <button onClick={cerrarCuenta} className="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-base sm:text-lg font-bold rounded-xl transition active:scale-[0.98]">
+          <button onClick={cerrarCuenta} className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-base font-bold rounded-xl transition-all active:scale-[0.98]">
             Cerrar Cuenta y Liberar Mesa
           </button>
         )}

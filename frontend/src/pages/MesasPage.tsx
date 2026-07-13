@@ -6,9 +6,9 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Mesa } from "@/types";
 
 const estadoColors: Record<string, string> = {
-  libre: "bg-emerald-500 hover:bg-emerald-600",
-  ocupada: "bg-amber-500 hover:bg-amber-600",
-  cuenta_cerrada: "bg-blue-500 hover:bg-blue-600",
+  libre: "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200",
+  ocupada: "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-200",
+  cuenta_cerrada: "bg-blue-500 hover:bg-blue-600 text-white shadow-blue-200",
 };
 
 const estadoLabels: Record<string, string> = {
@@ -22,7 +22,7 @@ export default function MesasPage() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const socket = useSocket();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchMesas();
@@ -68,49 +68,55 @@ export default function MesasPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <header className="bg-slate-800 border-b border-slate-700 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-30">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate("/")} className="text-slate-400 hover:text-white text-lg">←</button>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Mesas</h1>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/")} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-lg sm:text-xl">🪑</span>
+            <h1 className="text-base sm:text-lg font-bold text-gray-900">Mesas</h1>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
-            <span className="hidden sm:inline text-slate-300">{user?.name}</span>
-            <span className="px-2 py-0.5 bg-slate-700 text-slate-300 text-xs rounded-full hidden sm:inline">{user?.role}</span>
-            <button onClick={logout} className="text-slate-400 hover:text-white transition">Salir</button>
-          </div>
+          <span className="text-xs sm:text-sm text-gray-500">{user?.name}</span>
         </div>
-        <div className="flex items-center gap-3 sm:gap-4 text-xs mt-2 max-w-7xl mx-auto sm:hidden">
-          <span className="text-slate-300">{user?.name} · {user?.role}</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> Libre</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Ocupada</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> Cta.</span>
+        <div className="mx-auto flex max-w-7xl items-center gap-3 sm:gap-4 px-3 sm:px-4 pb-2.5 sm:pb-3 text-xs sm:text-sm text-gray-500">
+          <span className="flex items-center gap-1 sm:gap-1.5">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500" />
+            Libre
+          </span>
+          <span className="flex items-center gap-1 sm:gap-1.5">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-amber-500" />
+            Ocupada
+          </span>
+          <span className="flex items-center gap-1 sm:gap-1.5">
+            <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-blue-500" />
+            Cta. Cerrada
+          </span>
         </div>
-        <div className="hidden sm:flex items-center gap-4 text-sm mt-2 max-w-7xl mx-auto">
-          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-emerald-500"></span> Libre</span>
-          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-amber-500"></span> Ocupada</span>
-          <span className="flex items-center gap-2"><span className="w-3 h-3 rounded-full bg-blue-500"></span> Cta. Cerrada</span>
-        </div>
-      </header>
+      </nav>
 
-      <main className="max-w-7xl mx-auto p-4 sm:p-6">
+      <main className="mx-auto mt-4 sm:mt-6 max-w-7xl px-3 sm:px-4 pb-8">
         {loading ? (
-          <div className="text-center text-slate-400 py-20">Cargando mesas...</div>
+          <div className="text-center text-gray-400 py-20">Cargando mesas...</div>
+        ) : mesas.length === 0 ? (
+          <div className="text-center text-gray-400 py-20">No hay mesas registradas</div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {mesas.map((mesa) => (
               <button
                 key={mesa.id}
                 onClick={() => handleMesaClick(mesa)}
-                className={`${estadoColors[mesa.estado]} text-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg transition active:scale-[0.97] hover:scale-[1.02] flex flex-col items-center justify-center min-h-[120px] sm:min-h-[140px]`}
+                className={`${estadoColors[mesa.estado]} rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-lg hover:shadow-xl transition-all active:scale-[0.97] hover:scale-[1.02] hover:-translate-y-0.5 flex flex-col items-center justify-center min-h-[110px] sm:min-h-[130px]`}
               >
-                <span className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">#{mesa.numero}</span>
+                <span className="text-2xl sm:text-3xl font-bold mb-0.5 sm:mb-1">#{mesa.numero}</span>
                 <span className="text-xs sm:text-sm font-medium opacity-90">{estadoLabels[mesa.estado]}</span>
                 {mesa.pedidos?.[0] && (
                   <>
-                    <span className="text-xs mt-1 sm:mt-2 opacity-70">${Number(mesa.pedidos[0].total).toLocaleString()}</span>
-                    <span className="text-[10px] mt-0.5 opacity-60">{mesa.pedidos[0].user?.name}</span>
+                    <span className="text-xs mt-1 sm:mt-1.5 opacity-80">${Number(mesa.pedidos[0].total).toLocaleString()}</span>
+                    <span className="text-[10px] sm:text-xs mt-0.5 opacity-60">{mesa.pedidos[0].user?.name}</span>
                   </>
                 )}
               </button>

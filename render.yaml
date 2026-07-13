@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: totemconnect
+    env: node
+    region: oregon
+    buildCommand: npm run build
+    startCommand: cd backend && npx prisma db push && node dist/main.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: PORT
+        value: 10000

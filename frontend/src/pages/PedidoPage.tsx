@@ -72,8 +72,6 @@ export default function PedidoPage() {
     }
   };
 
-
-
   const addItem = async (productoId: number) => {
     if (!pedido) return;
     try {
@@ -138,31 +136,34 @@ export default function PedidoPage() {
   const pendingItems = items.filter((i) => !i.entregado);
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
-      {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-30">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <header className="bg-white shadow-sm border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-30">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <button onClick={() => navigate("/mesas")} className="text-slate-400 hover:text-white text-lg shrink-0">←</button>
+            <button onClick={() => navigate("/mesas")} className="text-gray-400 hover:text-gray-600 shrink-0 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
             <div className="min-w-0">
-              <h1 className="text-sm sm:text-lg font-bold text-white truncate">Pedido #{pedido?.id}</h1>
-              <p className="text-[10px] sm:text-xs text-slate-400">Mesa {pedido?.mesa?.numero || "..."}</p>
+              <h1 className="text-sm sm:text-base font-bold text-gray-900 truncate">Pedido #{pedido?.id}</h1>
+              <p className="text-[10px] sm:text-xs text-gray-500">Mesa {pedido?.mesa?.numero || "..."}</p>
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
-            <span className="text-base sm:text-xl font-bold text-emerald-400 whitespace-nowrap">${Number(pedido?.total || 0).toLocaleString()}</span>
+            <span className="text-base sm:text-lg font-bold text-emerald-600 whitespace-nowrap">${Number(pedido?.total || 0).toLocaleString()}</span>
             {pedido?.estado !== "cerrado" && pendingItems.length > 0 && !solicitado && (
-              <button onClick={pedir} className="px-8 sm:px-10 py-3 sm:py-4 bg-amber-600 hover:bg-amber-700 text-white text-base sm:text-lg font-bold rounded-xl whitespace-nowrap shadow-lg shadow-amber-600/30 animate-pulse">
+              <button onClick={pedir} className="px-6 sm:px-8 py-2 sm:py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-sm sm:text-base font-bold rounded-xl whitespace-nowrap shadow-lg shadow-amber-200 transition-all active:scale-[0.98] animate-pulse">
                 🍳 Pedir
               </button>
             )}
             {pedido?.estado !== "cerrado" && pendingItems.length > 0 && solicitado && (
-              <button onClick={entregar} className="px-8 sm:px-10 py-3 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-base sm:text-lg font-bold rounded-xl whitespace-nowrap shadow-lg shadow-emerald-600/30">
+              <button onClick={entregar} className="px-6 sm:px-8 py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-base font-bold rounded-xl whitespace-nowrap shadow-lg shadow-emerald-200 transition-all active:scale-[0.98]">
                 ✅ Entregar
               </button>
             )}
             {pedido?.estado !== "cerrado" && solicitado && pendingItems.length === 0 && items.length > 0 && (
-              <button onClick={() => navigate(`/pago/${pedidoId}`)} className="px-8 sm:px-10 py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white text-base sm:text-lg font-bold rounded-xl whitespace-nowrap shadow-lg shadow-blue-600/30">
+              <button onClick={() => navigate(`/pago/${pedidoId}`)} className="px-6 sm:px-8 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm sm:text-base font-bold rounded-xl whitespace-nowrap shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">
                 Pagar
               </button>
             )}
@@ -171,25 +172,26 @@ export default function PedidoPage() {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Productos */}
         <div className="flex-1 flex flex-col">
-          {/* Categorías */}
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-4 bg-slate-800/50">
-            <button onClick={() => setCatActiva(null)} className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition ${!catActiva ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "bg-slate-700 text-slate-300 hover:bg-slate-600"}`}>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white border-b border-gray-200">
+            <button onClick={() => setCatActiva(null)} className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all active:scale-[0.98] ${
+              !catActiva ? "bg-indigo-600 text-white shadow-sm" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}>
               Todos
             </button>
             {categorias.map((cat) => (
-              <button key={cat.id} onClick={() => setCatActiva(cat.id)} className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition ${catActiva === cat.id ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" : "bg-slate-700 text-slate-300 hover:bg-slate-600"}`}>
+              <button key={cat.id} onClick={() => setCatActiva(cat.id)} className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all active:scale-[0.98] ${
+                catActiva === cat.id ? "bg-indigo-600 text-white shadow-sm" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}>
                 {cat.icono} {cat.nombre}
               </button>
             ))}
           </div>
 
-          {/* Grid productos */}
           <div className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 pb-[68px] sm:pb-4">
             <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
               {productosFiltrados.map((prod) => (
-                <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition active:scale-[0.96] active:bg-gray-100 flex flex-col border border-gray-200 shadow-sm">
+                <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition-all active:scale-[0.96] hover:shadow-md flex flex-col border border-gray-200 shadow-sm hover:border-gray-300">
                   {prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-gray-100 rounded sm:rounded-lg mb-1.5 sm:mb-2 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" /></div>}
                   {!prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-gray-100 rounded sm:rounded-lg mb-1.5 sm:mb-2 flex items-center justify-center text-gray-400 text-sm sm:text-base">📷</div>}
                   <div className="flex-1 flex flex-col justify-end min-h-0">
@@ -202,57 +204,53 @@ export default function PedidoPage() {
           </div>
         </div>
 
-        {/* Carrito - sidebar en desktop, barra inferior + overlay en mobile */}
         <>
-          {/* Barra inferior carrito (mobile) - siempre visible */}
-          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-800 border-t border-slate-700 px-4 py-3 flex items-center justify-between shadow-2xl">
+          <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 flex items-center justify-between shadow-2xl">
             <div className="flex items-center gap-2">
-              <span className="text-white font-medium">🛒 {items.length}</span>
-              <span className="text-emerald-400 font-bold text-base">${Number(pedido?.total || 0).toLocaleString()}</span>
+              <span className="text-gray-700 font-medium">🛒 {items.length}</span>
+              <span className="text-emerald-600 font-bold text-base">${Number(pedido?.total || 0).toLocaleString()}</span>
             </div>
-            <button onClick={() => setShowCart(true)} className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-lg active:scale-95 transition">
+            <button onClick={() => setShowCart(true)} className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-sm">
               Ver Carrito
             </button>
           </div>
 
-          {/* Espaciador para la barra inferior */}
           <div className="sm:hidden h-[60px]" />
 
-          {/* Overlay mobile */}
           {showCart && (
             <div className="fixed inset-0 z-50 sm:hidden" onClick={() => setShowCart(false)}>
-              <div className="absolute inset-0 bg-black/60" />
-              <div className="absolute bottom-0 left-0 right-0 bg-slate-800 rounded-t-2xl max-h-[75vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-                <div className="flex items-center justify-between p-4 border-b border-slate-700">
-                  <h2 className="text-white font-bold text-lg">Carrito ({items.length})</h2>
-                  <button onClick={() => setShowCart(false)} className="text-slate-400 text-2xl">×</button>
+              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[75vh] flex flex-col shadow-xl" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                  <h2 className="text-gray-900 font-bold text-lg">Carrito ({items.length})</h2>
+                  <button onClick={() => setShowCart(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none w-8 h-8 flex items-center justify-center">&times;</button>
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 space-y-2">
                   {items.length === 0 ? (
-                    <p className="text-slate-500 text-center py-8">Sin items</p>
+                    <p className="text-gray-400 text-center py-8">Sin items</p>
                   ) : (
                     items.map((item) => (
-                      <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg ${item.entregado ? "bg-slate-700/50" : "bg-slate-700"}`}>
+                      <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg ${item.entregado ? "bg-gray-100" : "bg-gray-50"}`}>
                         <div className="flex items-center gap-2 flex-1 min-w-0">
-                          {item.entregado && <span className="text-emerald-400 text-lg shrink-0">✅</span>}
+                          {item.entregado && <span className="text-emerald-500 text-lg shrink-0">✅</span>}
                           <div className="min-w-0">
-                            <p className="text-white text-sm font-medium truncate">{item.producto?.nombre}</p>
-                            <p className="text-slate-400 text-xs">{item.cantidad}x ${Number(item.precioUnitario).toLocaleString()}</p>
+                            <p className="text-gray-900 text-sm font-medium truncate">{item.producto?.nombre}</p>
+                            <p className="text-gray-500 text-xs">{item.cantidad}x ${Number(item.precioUnitario).toLocaleString()}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
+                          <span className={`text-sm font-bold ${item.entregado ? "text-emerald-600" : "text-gray-900"}`}>${Number(item.subtotal).toLocaleString()}</span>
                           {!item.entregado && (!solicitado || itemsRemovibles.has(item.id!)) && (
-                            <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
+                            <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-500 text-lg leading-none w-6 h-6 flex items-center justify-center">&times;</button>
                           )}
                         </div>
                       </div>
                     )))}
                 </div>
-                <div className="p-4 border-t border-slate-700">
-                  <div className="flex justify-between text-lg font-bold">
-                    <span className="text-white">Total</span>
-                    <span className="text-emerald-400">${Number(pedido?.total || 0).toLocaleString()}</span>
+                <div className="p-4 border-t border-gray-200">
+                  <div className="flex justify-between text-base font-bold">
+                    <span className="text-gray-900">Total</span>
+                    <span className="text-emerald-600">${Number(pedido?.total || 0).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -260,38 +258,37 @@ export default function PedidoPage() {
           )}
         </>
 
-        {/* Carrito sidebar desktop */}
-        <div className="hidden sm:flex w-72 lg:w-80 bg-slate-800 border-l border-slate-700 flex-col">
-          <div className="p-4 border-b border-slate-700">
-            <h2 className="text-white font-bold">Carrito ({items.length})</h2>
+        <div className="hidden sm:flex w-72 lg:w-80 bg-white border-l border-gray-200 flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="text-gray-900 font-bold">Carrito ({items.length})</h2>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-2">
             {items.length === 0 ? (
-              <p className="text-slate-500 text-center py-8">Sin items</p>
+              <p className="text-gray-400 text-center py-8">Sin items</p>
             ) : (
                 items.map((item) => (
-                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg ${item.entregado ? "bg-slate-700/50" : "bg-slate-700"}`}>
+                  <div key={item.id} className={`flex items-center justify-between p-3 rounded-lg ${item.entregado ? "bg-gray-100" : "bg-gray-50"}`}>
                     <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {item.entregado && <span className="text-emerald-400 text-lg shrink-0">✅</span>}
+                      {item.entregado && <span className="text-emerald-500 text-lg shrink-0">✅</span>}
                       <div className="min-w-0">
-                        <p className="text-white text-sm font-medium truncate">{item.producto?.nombre}</p>
-                        <p className="text-slate-400 text-xs">{item.cantidad}x ${Number(item.precioUnitario).toLocaleString()}</p>
+                        <p className="text-gray-900 text-sm font-medium truncate">{item.producto?.nombre}</p>
+                        <p className="text-gray-500 text-xs">{item.cantidad}x ${Number(item.precioUnitario).toLocaleString()}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
+                      <span className={`text-sm font-bold ${item.entregado ? "text-emerald-600" : "text-gray-900"}`}>${Number(item.subtotal).toLocaleString()}</span>
                       {!item.entregado && (!solicitado || itemsRemovibles.has(item.id!)) && (
-                        <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
+                        <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-500 text-lg leading-none w-6 h-6 flex items-center justify-center">&times;</button>
                       )}
                     </div>
                   </div>
                 ))
             )}
           </div>
-          <div className="p-4 border-t border-slate-700">
-            <div className="flex justify-between text-lg font-bold">
-              <span className="text-white">Total</span>
-              <span className="text-emerald-400">${Number(pedido?.total || 0).toLocaleString()}</span>
+          <div className="p-4 border-t border-gray-200">
+            <div className="flex justify-between text-base font-bold">
+              <span className="text-gray-900">Total</span>
+              <span className="text-emerald-600">${Number(pedido?.total || 0).toLocaleString()}</span>
             </div>
           </div>
         </div>

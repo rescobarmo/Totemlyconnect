@@ -101,67 +101,67 @@ export default function KitchenDisplayPage() {
 
   const getElapsedColor = (createdAt: string) => {
     const elapsed = (now - new Date(createdAt).getTime()) / 1000;
-    if (elapsed > 600) return "text-red-400";
-    if (elapsed > 300) return "text-amber-400";
-    return "text-emerald-400";
+    if (elapsed > 600) return "text-red-500";
+    if (elapsed > 300) return "text-amber-500";
+    return "text-emerald-500";
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-white">🍳 Cocina</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-slate-400">{pedidos.length} pedidos activos</span>
-          <button onClick={fetchPedidos} className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700">🔄 Actualizar</button>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="flex items-center justify-between mb-6 max-w-7xl mx-auto">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">🍳 Cocina</h1>
+        <div className="flex items-center gap-3">
+          <span className="text-gray-500 text-xs sm:text-sm">{pedidos.length} pedidos activos</span>
+          <button onClick={fetchPedidos} className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm transition-all active:scale-[0.98]">🔄 Actualizar</button>
         </div>
       </div>
 
       {loading ? (
-        <p className="text-slate-500 text-center py-20 text-xl">Cargando pedidos...</p>
+        <p className="text-gray-400 text-center py-20 text-base">Cargando pedidos...</p>
       ) : pedidos.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-6xl mb-4">✨</p>
-          <p className="text-slate-500 text-xl">Sin pedidos pendientes</p>
+          <p className="text-5xl mb-3">✨</p>
+          <p className="text-gray-400 text-base">Sin pedidos pendientes</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-w-7xl mx-auto">
           {pedidos.map((pedido) => (
-            <div key={pedido.id} className={`bg-slate-900 rounded-2xl border-2 overflow-hidden ${
-              pedido.estado === "entregado" ? "border-emerald-500/50" : "border-amber-500/30"
+            <div key={pedido.id} className={`bg-white rounded-xl shadow-sm border-2 overflow-hidden ${
+              pedido.estado === "entregado" ? "border-emerald-300" : "border-amber-300"
             }`}>
               <div className={`px-4 py-3 flex items-center justify-between ${
-                pedido.estado === "entregado" ? "bg-emerald-500/10" : "bg-amber-500/10"
+                pedido.estado === "entregado" ? "bg-emerald-50" : "bg-amber-50"
               }`}>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl font-black text-white">#{pedido.id}</span>
+                  <span className="text-xl font-black text-gray-900">#{pedido.id}</span>
                   <div>
-                    <p className="text-white font-bold">Mesa {pedido.mesa?.numero}</p>
-                    <p className="text-slate-400 text-xs">{pedido.user?.name}</p>
+                    <p className="text-gray-900 font-bold text-sm">Mesa {pedido.mesa?.numero}</p>
+                    <p className="text-gray-400 text-xs">{pedido.user?.name}</p>
                   </div>
                 </div>
-                <span className={`text-lg font-mono font-bold ${getElapsedColor(pedido.createdAt)}`}>
+                <span className={`text-base font-mono font-bold ${getElapsedColor(pedido.createdAt)}`}>
                   {getElapsed(pedido.createdAt)}
                 </span>
               </div>
 
               <div className="p-4 space-y-2">
                 {pedido.detalles?.filter((d) => !d.entregado).map((item) => (
-                  <div key={item.id} className="flex items-center gap-3 bg-slate-800 rounded-lg px-3 py-2">
-                    <span className="text-lg font-bold text-amber-400 w-8 text-center">{item.cantidad}x</span>
-                    <span className="text-white text-sm flex-1">{item.producto?.nombre}</span>
+                  <div key={item.id} className="flex items-center gap-3 bg-gray-50 rounded-lg px-3 py-2">
+                    <span className="text-base font-bold text-amber-600 w-8 text-center">{item.cantidad}x</span>
+                    <span className="text-gray-800 text-sm flex-1">{item.producto?.nombre}</span>
                   </div>
                 ))}
                 {pedido.detalles?.filter((d) => d.entregado).length === pedido.detalles?.length && (
-                  <p className="text-emerald-400 text-sm text-center py-2">✅ Todo entregado</p>
+                  <p className="text-emerald-600 text-sm text-center py-2">✅ Todo entregado</p>
                 )}
               </div>
 
               {pedido.estado !== "entregado" && (
                 <div className="p-4 pt-0 flex gap-2">
-                  <button onClick={() => reimprimir(pedido.id)} className="flex-1 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl text-sm transition">
+                  <button onClick={() => reimprimir(pedido.id)} className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-sm transition-all active:scale-[0.98]">
                     🖨️ Reimprimir
                   </button>
-                  <button onClick={() => entregar(pedido.id)} className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-lg transition">
+                  <button onClick={() => entregar(pedido.id)} className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-sm transition-all active:scale-[0.98]">
                     ✅ Marcar Listo
                   </button>
                 </div>

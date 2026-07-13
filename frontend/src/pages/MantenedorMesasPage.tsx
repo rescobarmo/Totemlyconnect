@@ -4,9 +4,9 @@ import api from "@/lib/api";
 import { Mesa } from "@/types";
 
 const estadoColors: Record<string, string> = {
-  libre: "bg-emerald-500/20 text-emerald-400",
-  ocupada: "bg-amber-500/20 text-amber-400",
-  cuenta_cerrada: "bg-blue-500/20 text-blue-400",
+  libre: "bg-emerald-100 text-emerald-700",
+  ocupada: "bg-amber-100 text-amber-700",
+  cuenta_cerrada: "bg-blue-100 text-blue-700",
 };
 
 const estadoLabels: Record<string, string> = {
@@ -54,30 +54,35 @@ export default function MantenedorMesasPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
-        <div className="flex items-center justify-between max-w-5xl mx-auto">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate("/")} className="text-slate-400 hover:text-white">←</button>
-            <h1 className="text-2xl font-bold text-white">🪑 Mantenedor de Mesas</h1>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-3 py-2.5 sm:px-4 sm:py-3">
+          <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/")} className="text-gray-400 hover:text-gray-600 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-lg sm:text-xl">🪑</span>
+            <h1 className="text-base sm:text-lg font-bold text-gray-900">Mantenedor de Mesas</h1>
           </div>
-          <button onClick={openCreate} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">+ Nueva Mesa</button>
+          <button onClick={openCreate} className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium rounded-lg transition-all active:scale-[0.98]">+ Nueva Mesa</button>
         </div>
-      </header>
+      </nav>
 
-      <main className="max-w-5xl mx-auto p-6">
-        {loading ? <p className="text-slate-400 text-center py-10">Cargando...</p> : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+      <main className="mx-auto mt-4 sm:mt-6 max-w-5xl px-3 sm:px-4 pb-8">
+        {loading ? <p className="text-center py-10 text-gray-400 text-sm">Cargando...</p> : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
             {mesas.map((mesa) => (
-              <div key={mesa.id} className="bg-slate-800 rounded-xl p-5 flex flex-col items-center gap-3">
-                <span className="text-4xl font-bold text-white">#{mesa.numero}</span>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${estadoColors[mesa.estado]}`}>
+              <div key={mesa.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-5 flex flex-col items-center gap-2 sm:gap-3 transition-all hover:shadow-md">
+                <span className="text-2xl sm:text-3xl font-bold text-gray-900">#{mesa.numero}</span>
+                <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${estadoColors[mesa.estado]}`}>
                   {estadoLabels[mesa.estado]}
                 </span>
                 <div className="flex gap-2">
-                  <button onClick={() => openEdit(mesa)} className="text-slate-400 hover:text-white text-sm px-2">✏️</button>
+                  <button onClick={() => openEdit(mesa)} className="text-gray-400 hover:text-gray-600 text-sm px-1.5 transition-colors">✏️</button>
                   {mesa.estado === "libre" && (
-                    <button onClick={() => remove(mesa.id)} className="text-slate-400 hover:text-red-400 text-sm px-2">🗑️</button>
+                    <button onClick={() => remove(mesa.id)} className="text-gray-400 hover:text-red-500 text-sm px-1.5 transition-colors">🗑️</button>
                   )}
                 </div>
               </div>
@@ -87,13 +92,18 @@ export default function MantenedorMesasPage() {
       </main>
 
       {modal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setModal(false)}>
-          <div className="bg-slate-800 rounded-2xl p-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-white text-xl font-bold mb-4">{editing ? "Editar" : "Nueva"} Mesa</h2>
-            <input type="number" min={1} value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Número de mesa" className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white" />
-            <div className="flex gap-3 mt-4">
-              <button onClick={() => setModal(false)} className="flex-1 py-3 bg-slate-700 text-white rounded-lg">Cancelar</button>
-              <button onClick={save} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg">Guardar</button>
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-end sm:items-center justify-center" onClick={() => setModal(false)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm shadow-xl sm:mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between rounded-t-2xl">
+              <h2 className="text-lg font-bold text-gray-900">{editing ? "Editar" : "Nueva"} Mesa</h2>
+              <button onClick={() => setModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl leading-none w-8 h-8 flex items-center justify-center">&times;</button>
+            </div>
+            <div className="px-4 py-4">
+              <input type="number" min={1} value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Número de mesa" className="w-full px-3 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" />
+            </div>
+            <div className="px-4 py-4 border-t border-gray-100 flex gap-3">
+              <button onClick={() => setModal(false)} className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg text-sm transition-all active:scale-[0.98]">Cancelar</button>
+              <button onClick={save} className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition-all active:scale-[0.98]">Guardar</button>
             </div>
           </div>
         </div>
