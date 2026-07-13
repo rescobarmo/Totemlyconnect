@@ -49,7 +49,8 @@ router.get("/me", authMiddleware, async (req: AuthRequest, res: Response) => {
 // Admin: listar usuarios (filtrado por restaurante)
 router.get("/usuarios", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const users = await AuthService.listar(req.restaurantId);
+    const restaurantId = req.query.restaurantId ? Number(req.query.restaurantId) : req.restaurantId;
+    const users = await AuthService.listar(restaurantId);
     res.json({ success: true, data: users });
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message });
@@ -59,9 +60,20 @@ router.get("/usuarios", authMiddleware, adminMiddleware, tenantMiddleware, async
 // Admin: crear usuario (mesero) dentro del restaurante
 router.post("/usuarios", authMiddleware, adminMiddleware, tenantMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, email, password, role } = req.body;
-    const user = await AuthService.crear(name, email, password, req.restaurantId, role);
+    const { name, email, password, role, restaurantId: bodyRestId } = req.body;
+    const restaurantId = bodyRestId || req.restaurantId;
+    const user = await AuthService.crear(name, email, password, restaurantId, role);
     res.status(201).json({ success: true, data: user });
+  } catch (error: any) {
+    res.status(error.statusCode || 500).json({ success: false, error: error.message });
+  }
+});
+
+// Superadmin: eliminar usuario
+router.delete("/usuarios/:id", authMiddleware, adminMiddleware, superadminMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const result = await AuthService.eliminar(Number(req.params.id));
+    res.json({ success: true, data: result });
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message });
   }

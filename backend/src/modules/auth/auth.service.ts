@@ -130,4 +130,13 @@ export class AuthService {
       select: { id: true, name: true, email: true, role: true, restaurantId: true, createdAt: true },
     });
   }
+
+  static async eliminar(targetUserId: number) {
+    const user = await prisma.user.findUnique({ where: { id: targetUserId } });
+    if (!user) throw AppError.notFound("Usuario no encontrado");
+    if (user.role === "superadmin") {
+      throw AppError.badRequest("No se puede eliminar un superadmin");
+    }
+    return prisma.user.delete({ where: { id: targetUserId } });
+  }
 }
