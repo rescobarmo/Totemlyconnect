@@ -29,8 +29,12 @@ router.get("/:id", async (req: AuthRequest, res: Response) => {
 
 router.post("/", async (req: AuthRequest, res: Response) => {
   try {
-    const { nombre, direccion, telefono } = req.body;
-    const data = await RestauranteService.create({ nombre, direccion, telefono });
+    const { nombre, direccion, telefono, adminEmail, adminPassword, adminName } = req.body;
+    if (!adminEmail || !adminPassword) {
+      res.status(400).json({ success: false, error: "adminEmail y adminPassword son requeridos" });
+      return;
+    }
+    const data = await RestauranteService.create({ nombre, direccion, telefono, adminEmail, adminPassword, adminName });
     res.status(201).json({ success: true, data });
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message });
