@@ -83,6 +83,7 @@ export default function PedidoPage() {
             .map((i) => i.id!);
           if (nuevosIds.length > 0) {
             setItemsRemovibles((prev) => new Set([...prev, ...nuevosIds]));
+            setSolicitado(false);
           }
         }
         setItems(nuevosItems);
