@@ -227,7 +227,7 @@ export default function PedidoPage() {
                           )}
                         </div>
                       </div>
-                    ))}
+                    )))}
                 </div>
                 <div className="p-4 border-t border-slate-700">
                   <div className="flex justify-between text-lg font-bold">
