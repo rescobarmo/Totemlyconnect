@@ -189,12 +189,12 @@ export default function PedidoPage() {
           <div className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 pb-[68px] sm:pb-4">
             <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
               {productosFiltrados.map((prod) => (
-                <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-slate-800 rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition active:scale-[0.96] active:bg-slate-700 flex flex-col border border-slate-700/20">
-                  {prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-slate-700 rounded sm:rounded-lg mb-1.5 sm:mb-2 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" /></div>}
-                  {!prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-slate-700 rounded sm:rounded-lg mb-1.5 sm:mb-2 flex items-center justify-center text-slate-500 text-sm sm:text-base">📷</div>}
+                <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-white rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition active:scale-[0.96] active:bg-gray-100 flex flex-col border border-gray-200 shadow-sm">
+                  {prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-gray-100 rounded sm:rounded-lg mb-1.5 sm:mb-2 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" /></div>}
+                  {!prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-gray-100 rounded sm:rounded-lg mb-1.5 sm:mb-2 flex items-center justify-center text-gray-400 text-sm sm:text-base">📷</div>}
                   <div className="flex-1 flex flex-col justify-end min-h-0">
-                    <p className="text-xs sm:text-sm font-medium text-white leading-tight truncate">{prod.nombre}</p>
-                    <p className="text-emerald-400 text-xs sm:text-sm font-bold mt-0.5">${Number(prod.precio).toLocaleString()}</p>
+                    <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight truncate">{prod.nombre}</p>
+                    <p className="text-emerald-600 text-xs sm:text-sm font-bold mt-0.5">${Number(prod.precio).toLocaleString()}</p>
                   </div>
                 </button>
               ))}
