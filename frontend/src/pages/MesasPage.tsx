@@ -6,9 +6,9 @@ import { useAuthStore } from "@/stores/auth.store";
 import { Mesa } from "@/types";
 
 const estadoColors: Record<string, string> = {
-  libre: "bg-emerald-400 hover:bg-emerald-500 text-white shadow-emerald-200",
-  ocupada: "bg-rose-400 hover:bg-rose-500 text-white shadow-rose-200",
-  cuenta_cerrada: "bg-blue-400 hover:bg-blue-500 text-white shadow-blue-200",
+  libre: "bg-emerald-400/90 hover:bg-emerald-500 text-white shadow-emerald-200",
+  ocupada: "bg-rose-400/90 hover:bg-rose-500 text-white shadow-rose-200",
+  cuenta_cerrada: "bg-blue-400/90 hover:bg-blue-500 text-white shadow-blue-200",
 };
 
 const estadoLabels: Record<string, string> = {
