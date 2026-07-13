@@ -222,7 +222,7 @@ export default function PedidoPage() {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                          {!item.entregado && (
+                          {!item.entregado && !solicitado && (
                             <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                           )}
                         </div>
@@ -260,7 +260,7 @@ export default function PedidoPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                      {!item.entregado && (
+                      {!item.entregado && !solicitado && (
                         <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                       )}
                     </div>
