@@ -169,7 +169,7 @@ export default function PedidoPage() {
           <div className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 pb-[68px] sm:pb-4">
             <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
               {productosFiltrados.map((prod) => (
-                <button key={prod.id} onClick={() => addItem(prod.id)} disabled={solicitado} className={`bg-slate-800 rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition flex flex-col border border-slate-700/20 ${solicitado ? "opacity-40 cursor-not-allowed" : "active:scale-[0.96] active:bg-slate-700"}`}>
+                <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-slate-800 rounded-lg sm:rounded-xl p-2 sm:p-3 text-left transition active:scale-[0.96] active:bg-slate-700 flex flex-col border border-slate-700/20">
                   {prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-slate-700 rounded sm:rounded-lg mb-1.5 sm:mb-2 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" /></div>}
                   {!prod.imagen && <div className="w-full aspect-[4/3] sm:aspect-video bg-slate-700 rounded sm:rounded-lg mb-1.5 sm:mb-2 flex items-center justify-center text-slate-500 text-sm sm:text-base">📷</div>}
                   <div className="flex-1 flex flex-col justify-end min-h-0">
@@ -222,13 +222,12 @@ export default function PedidoPage() {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                          {!item.entregado && !solicitado && (
+                          {!item.entregado && (
                             <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                           )}
                         </div>
                       </div>
-                    ))
-                  )}
+                    ))}
                 </div>
                 <div className="p-4 border-t border-slate-700">
                   <div className="flex justify-between text-lg font-bold">
@@ -261,7 +260,7 @@ export default function PedidoPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={`text-sm font-bold ${item.entregado ? "text-emerald-400" : "text-white"}`}>${Number(item.subtotal).toLocaleString()}</span>
-                      {!item.entregado && !solicitado && (
+                      {!item.entregado && (
                         <button onClick={() => removeItem(item.id)} className="text-red-400 hover:text-red-300 text-lg">×</button>
                       )}
                     </div>
