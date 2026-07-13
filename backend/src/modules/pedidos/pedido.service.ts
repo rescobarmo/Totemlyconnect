@@ -52,6 +52,8 @@ export class PedidoService {
       },
     });
 
+    await prisma.mesa.update({ where: { id: mesaId }, data: { estado: "ocupada" } });
+
     events.pedidoCreado(restaurantId!, {
       pedidoId: pedido.id,
       mesaId,

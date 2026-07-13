@@ -210,6 +210,10 @@ export class PagoService {
         where: { id: pedidoId },
         data: { estado: "cerrado" },
       }),
+      prisma.mesa.update({
+        where: { id: pedido.mesaId },
+        data: { estado: "libre" },
+      }),
       prisma.historialPedido.create({
         data: {
           pedidoId,
