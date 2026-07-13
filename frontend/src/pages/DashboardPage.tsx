@@ -16,7 +16,10 @@ export default function DashboardPage() {
           { title: "Mesas Admin", desc: "Crear/editar mesas", href: "/admin/mesas", icon: "⚙️", color: "from-slate-600 to-slate-700" },
           { title: "Usuarios", desc: "Gestionar meseros", href: "/admin/usuarios", icon: "👤", color: "from-rose-600 to-rose-700" },
           ...(user?.role === "superadmin"
-            ? [{ title: "Restaurantes", desc: "Gestionar locales", href: "/admin/restaurantes", icon: "🏪", color: "from-teal-600 to-teal-700" }]
+            ? [
+                { title: "Restaurantes", desc: "Gestionar locales", href: "/admin/restaurantes", icon: "🏪", color: "from-teal-600 to-teal-700" },
+                { title: "Adm. por Restaurante", desc: "Ver admins de cada local", href: "/admin/restaurantes", icon: "👥", color: "from-violet-600 to-violet-700" },
+              ]
             : []),
         ]
       : []),
