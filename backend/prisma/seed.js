@@ -39,19 +39,8 @@ async function main() {
   });
   console.log("Restaurante creado:", restaurant.nombre);
 
-  // Limpiar datos previos del restaurante demo (para evitar conflictos de unique)
-  await prisma.pagoParcial.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
-  await prisma.detallePedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
-  await prisma.historialPedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
-  await prisma.historialMesa.deleteMany({ where: { mesa: { restaurantId: restaurant.id } } });
-  await prisma.pedido.deleteMany({ where: { restaurantId: restaurant.id } });
-  await prisma.producto.deleteMany({ where: { restaurantId: restaurant.id } });
-  await prisma.categoria.deleteMany({ where: { restaurantId: restaurant.id } });
-  await prisma.mesa.deleteMany({ where: { restaurantId: restaurant.id } });
-  await prisma.user.deleteMany({ where: { restaurantId: restaurant.id } });
-  console.log("Datos previos del restaurante eliminados");
-
-  // Migrar datos existentes (de schema anterior sin restaurante) al restaurante demo
+  // PASO 1: Migrar datos con restaurantId=null al restaurante demo
+  // (Esto unifica datos viejos + nuevos bajo restaurantId=1)
   const migrar = async (model, nombre) => {
     try {
       const { count } = await model.updateMany({
@@ -68,7 +57,6 @@ async function main() {
   await migrar(prisma.categoria, "Categorías");
   await migrar(prisma.producto, "Productos");
   await migrar(prisma.pedido, "Pedidos");
-  // Migrar usuarios que NO sean superadmin (restaurantId = null para superadmin)
   try {
     const { count } = await prisma.user.updateMany({
       where: { restaurantId: null, email: { not: "super@totemconnect.com" } },
@@ -78,6 +66,18 @@ async function main() {
   } catch (e) {
     console.log("  (sin usuarios que migrar)");
   }
+
+  // PASO 2: Limpiar datos del restaurante (ahora todo tiene restaurantId=1)
+  const { count: delPagos } = await prisma.pagoParcial.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  const { count: delDetalles } = await prisma.detallePedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  const { count: delHistP } = await prisma.historialPedido.deleteMany({ where: { pedido: { restaurantId: restaurant.id } } });
+  const { count: delHistM } = await prisma.historialMesa.deleteMany({ where: { mesa: { restaurantId: restaurant.id } } });
+  const { count: delPedidos } = await prisma.pedido.deleteMany({ where: { restaurantId: restaurant.id } });
+  const { count: delProds } = await prisma.producto.deleteMany({ where: { restaurantId: restaurant.id } });
+  const { count: delCats } = await prisma.categoria.deleteMany({ where: { restaurantId: restaurant.id } });
+  const { count: delMesas } = await prisma.mesa.deleteMany({ where: { restaurantId: restaurant.id } });
+  const { count: delUsers } = await prisma.user.deleteMany({ where: { restaurantId: restaurant.id } });
+  console.log(`Limpieza: ${delPagos} pagos, ${delDetalles} detalles, ${delHistP + delHistM} historiales, ${delPedidos} pedidos, ${delProds} productos, ${delCats} categorias, ${delMesas} mesas, ${delUsers} usuarios`);
 
   // Superadmin global (no asociado a ningun restaurante)
   let superadmin = await prisma.user.findFirst({ where: { email: "super@totemconnect.com", restaurantId: null } });
