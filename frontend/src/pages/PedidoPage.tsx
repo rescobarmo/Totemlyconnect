@@ -192,7 +192,7 @@ export default function PedidoPage() {
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-1.5 sm:gap-2">
               {productosFiltrados.map((prod) => (
                 <button key={prod.id} onClick={() => addItem(prod.id)} className="bg-white rounded-lg sm:rounded-xl p-1.5 sm:p-2 text-left transition-all active:scale-[0.96] hover:shadow-md flex flex-col border border-gray-200 shadow-sm hover:border-gray-300">
-                  {prod.imagen && <div className="w-full aspect-square sm:aspect-[4/3] bg-gray-100 rounded sm:rounded-lg mb-1 sm:mb-1.5 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-cover" /></div>}
+                  {prod.imagen && <div className="w-full aspect-square sm:aspect-[4/3] bg-gray-100 rounded sm:rounded-lg mb-1 sm:mb-1.5 overflow-hidden"><img src={prod.imagen} alt={prod.nombre} className="w-full h-full object-contain" /></div>}
                   {!prod.imagen && <div className="w-full aspect-square sm:aspect-[4/3] bg-gray-100 rounded sm:rounded-lg mb-1 sm:mb-1.5 flex items-center justify-center text-gray-400 text-xs sm:text-sm">📷</div>}
                   <div className="flex-1 flex flex-col justify-end min-h-0">
                     <p className="text-xs sm:text-sm font-medium text-gray-900 leading-tight truncate">{prod.nombre}</p>
