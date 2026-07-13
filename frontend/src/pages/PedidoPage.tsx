@@ -16,6 +16,7 @@ export default function PedidoPage() {
   const [catActiva, setCatActiva] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCart, setShowCart] = useState(false);
+  const [solicitado, setSolicitado] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -104,6 +105,12 @@ export default function PedidoPage() {
       }
     };
 
+  const pedir = () => {
+    if (!pedido) return;
+    setSolicitado(true);
+    socket.emit("pedir", { pedidoId: pedido.id, mesaId: pedido.mesaId, items: items.filter(i => !i.entregado) });
+  };
+
   const productosFiltrados = catActiva
     ? productos.filter((p) => p.categoriaId === catActiva)
     : productos;
@@ -124,7 +131,12 @@ export default function PedidoPage() {
           </div>
           <div className="flex items-center gap-1 sm:gap-3 shrink-0">
             <span className="text-base sm:text-xl font-bold text-emerald-400 whitespace-nowrap">${Number(pedido?.total || 0).toLocaleString()}</span>
-            {pedido?.estado !== "cerrado" && pendingItems.length > 0 && (
+            {pedido?.estado !== "cerrado" && pendingItems.length > 0 && !solicitado && (
+              <button onClick={pedir} className="px-8 sm:px-10 py-3 sm:py-4 bg-amber-600 hover:bg-amber-700 text-white text-base sm:text-lg font-bold rounded-xl whitespace-nowrap shadow-lg shadow-amber-600/30 animate-pulse">
+                🍳 Pedir
+              </button>
+            )}
+            {pedido?.estado !== "cerrado" && pendingItems.length > 0 && solicitado && (
               <button onClick={entregar} className="px-8 sm:px-10 py-3 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white text-base sm:text-lg font-bold rounded-xl whitespace-nowrap shadow-lg shadow-emerald-600/30">
                 Entregar
               </button>
