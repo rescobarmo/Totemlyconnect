@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Totemly | Agentes de IA y mensajería corporativa segura y trazable</title>
+<meta name="description" content="Totemly es la plataforma de automatización comercial con agentes de IA y mensajería corporativa segura y trazable. Vende más, atiende mejor y comprueba cada comunicación.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --navy:#000B3D;
+  --navy-deep:#000B3D;
+  --navy-soft:#0a2b55;
+  --cyan:#00D2D3;
+  --cyan-hover:#00B8B9;
+  --cyan-ink:#00797A;
+  --paper:#F3F6F9;
+  --line:#DCE3EB;
+  --ink:#0E1D3E;
+  --muted:#586A82;
+  --white:#fff;
+  --wa:#25D366;
+  --tick:#53BDEB;
+  --wrap:1200px;
+  --font:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:104px}
+body{font-family:var(--font);color:var(--ink);background:var(--white);line-height:1.6;font-size:1rem;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px;border-radius:4px}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.85rem 1.4rem;border-radius:10px;font:700 .95rem/1 var(--font);text-decoration:none;cursor:pointer;border:2px solid transparent;transition:background .2s,color .2s,border-color .2s}
+.btn-cyan{background:var(--cyan);color:var(--navy-deep)}
+.btn-cyan:hover{background:var(--cyan-hover)}
+.btn-navy{background:var(--navy);color:var(--white)}
+.btn-navy:hover{background:var(--navy-soft)}
+.btn-ghost{border-color:rgba(255,255,255,.35);color:var(--white)}
+.btn-ghost:hover{border-color:var(--white);background:rgba(255,255,255,.06)}
+.btn-line{border-color:var(--navy);color:var(--navy)}
+.btn-line:hover{background:var(--navy);color:var(--white)}
+
+/* Header */
+.site-header{position:sticky;top:0;z-index:100;background:#000B3D;backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.1)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;height:92px;padding:0 2.5rem}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;font-weight:800;font-size:1.35rem;letter-spacing:-.03em;color:var(--navy)}
+.brand-mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy-soft));color:var(--cyan);display:grid;place-items:center;font-size:1.05rem;position:relative}
+.brand-mark::after{content:"";position:absolute;right:-3px;bottom:-3px;width:11px;height:11px;border-radius:50%;background:var(--cyan);border:2px solid var(--white)}
+.brand-logo{height:66px;width:auto;display:block}
+.f-brand .brand-logo{height:56px}
+.nav-links{display:flex;gap:1.4rem;list-style:none;align-items:center}
+.nav-links > li{position:relative}
+.nav-links a{text-decoration:none;font-weight:600;font-size:.94rem;color:#C9D6E8;padding:.5rem 0;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:.35rem}
+.nav-links a:hover{color:var(--white)}
+.nav-links a i{font-size:.7rem;color:#8FA0B8}
+.dropdown{position:absolute;top:100%;left:-.6rem;background:var(--white);border:1px solid var(--line);border-radius:14px;padding:.6rem;min-width:250px;box-shadow:0 20px 45px -25px rgba(14,29,62,.4);opacity:0;visibility:hidden;transform:translateY(8px);transition:.2s;z-index:110}
+.nav-links > li:hover .dropdown,.nav-links > li:focus-within .dropdown{opacity:1;visibility:visible;transform:none}
+.dropdown a{display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;border-radius:9px;border:0;color:#33445E}
+.dropdown a:hover{background:var(--paper);color:var(--navy)}
+.dropdown a i{font-size:.85rem;color:var(--cyan-ink)}
+.nav-cta{display:flex;align-items:center;gap:.75rem}
+.nav-cta .login{font-weight:600;font-size:.92rem;color:#C9D6E8;text-decoration:none}
+.nav-cta .login:hover{color:var(--white)}
+.menu-btn{display:none;background:none;border:1px solid rgba(255,255,255,.25);border-radius:8px;width:42px;height:42px;font-size:1.1rem;color:var(--white);cursor:pointer}
+
+/* Hero */
+.hero{background:var(--white);color:var(--ink);position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(0,11,61,.07) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(90deg,transparent 30%,#000 90%);-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 90%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center;padding-top:5rem;padding-bottom:7.5rem}
+.hero-kicker{display:inline-flex;align-items:center;gap:.55rem;font-weight:600;font-size:.9rem;color:var(--navy);margin-bottom:1.6rem;background:rgba(0,210,211,.12);border:1px solid rgba(0,210,211,.35);padding:.4rem .9rem;border-radius:999px}
+.hero-kicker i{color:var(--cyan-ink);font-size:.9rem}
+.hero h1{font-size:clamp(2.4rem,5vw,3.9rem);line-height:1.05;font-weight:800;letter-spacing:-.03em;margin-bottom:1.5rem;max-width:16ch}
+.hero h1 .grad{color:var(--cyan-ink)}
+.hero-lead{font-size:1.15rem;color:var(--muted);max-width:52ch;margin-bottom:1.4rem}
+.hero-say{font-size:1rem;color:var(--muted);max-width:52ch;margin-bottom:2.2rem;border-left:3px solid var(--cyan);padding-left:1rem;font-style:italic}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:1rem}
+.hero-note{font-size:.85rem;color:var(--muted)}
+
+/* Teléfono */
+.phone{justify-self:center;width:min(100%,360px);background:#0B1733;border:1px solid rgba(255,255,255,.12);border-radius:36px;padding:12px;box-shadow:0 40px 80px -30px rgba(0,0,0,.6)}
+.screen{border-radius:26px;overflow:hidden;background:#ECE5DD}
+.wa-bar{display:flex;align-items:center;gap:.7rem;background:#0B1733;color:#fff;padding:.85rem 1rem}
+.wa-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--cyan-ink));display:grid;place-items:center;color:#fff;font-weight:800;font-size:.8rem;flex:none}
+.wa-name{font-weight:700;font-size:.92rem;line-height:1.2;display:flex;align-items:center;gap:.35rem}
+.wa-name i{color:var(--wa);font-size:.8rem}
+.wa-sub{font-size:.72rem;opacity:.8}
+.chat{padding:1rem .8rem 1.2rem;display:flex;flex-direction:column;gap:.55rem;min-height:410px;color:#111B21}
+.day{align-self:center;background:#E1F2FB;color:#54656F;font-size:.7rem;padding:.2rem .6rem;border-radius:6px;margin-bottom:.2rem}
+.bubble{max-width:86%;padding:.55rem .7rem .35rem;border-radius:10px;font-size:.84rem;line-height:1.45;box-shadow:0 1px .5px rgba(0,0,0,.13)}
+.in{align-self:flex-start;background:#fff;border-top-left-radius:2px}
+.out{align-self:flex-end;background:#D9FDD3;border-top-right-radius:2px}
+.agent{align-self:flex-start;background:#E8F7F7;border-top-left-radius:2px;border-left:3px solid var(--cyan-ink)}
+.bubble strong{font-weight:700}
+.promo-img{border-radius:8px;margin:.15rem 0 .5rem;width:100%;height:auto;display:block}
+.b-title{display:block;font-weight:700;margin-bottom:.2rem}
+.badge-ai{display:inline-flex;align-items:center;gap:.3rem;font-size:.62rem;font-weight:700;color:var(--cyan-ink);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem}
+.badge-ai i{font-size:.6rem}
+.meta{display:flex;justify-content:flex-end;align-items:center;gap:.3rem;font-size:.66rem;color:#667781;margin-top:.15rem}
+.ticks{color:#8696A0;transition:color .4s}
+.ticks.read{color:var(--tick)}
+.quick{display:block;margin:.5rem -.7rem -.35rem;border-top:1px solid #E9EDEF;text-align:center;color:#027EB5;font-weight:600;padding:.5rem;font-size:.84rem}
+.status{display:flex;justify-content:center;gap:1rem;margin-top:1.1rem;font-size:.8rem;color:var(--muted);flex-wrap:wrap}
+.status span{display:inline-flex;align-items:center;gap:.4rem;transition:color .3s}
+.status span.on{color:var(--navy)}
+.status .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.js .chat .anim{opacity:0;transform:translateY(8px)}
+.js .chat .anim.show{opacity:1;transform:none;transition:opacity .4s ease,transform .4s ease}
+
+/* Métricas */
+.metrics{position:relative;margin-top:-3.5rem;z-index:2}
+.metrics-inner{background:var(--white);border:1px solid var(--line);border-radius:18px;display:grid;grid-template-columns:repeat(3,1fr);box-shadow:0 20px 40px -25px rgba(14,29,62,.35)}
+.metric{padding:1.8rem 2rem;display:flex;align-items:baseline;gap:1rem}
+.metric+.metric{border-left:1px solid var(--line)}
+.metric b{font-size:2.3rem;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--navy);white-space:nowrap}
+.metric span{color:var(--muted);font-size:.95rem;line-height:1.35}
+
+/* Secciones */
+section{padding:6.5rem 0}
+.sec-head{max-width:680px;margin-bottom:3.5rem}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head h2{font-size:clamp(1.9rem,3.4vw,2.7rem);line-height:1.12;letter-spacing:-.025em;font-weight:800;margin-bottom:.9rem}
+.sec-head p{color:var(--muted);font-size:1.08rem}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan-ink);margin-bottom:.9rem}
+.paper{background:var(--paper)}
+.dark{background:var(--navy-deep);color:var(--white)}
+.dark .sec-head p{color:#B9C8DD}
+.dark .eyebrow{color:var(--cyan)}
+
+/* Problema */
+.problem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.problem-card{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:1.8rem;transition:.25s}
+.problem-card:hover{transform:translateY(-4px);border-color:#F3B0B0}
+.problem-card i{font-size:1.3rem;color:#C0392B;margin-bottom:1rem;display:block}
+.problem-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.4rem}
+.problem-card p{color:var(--muted);font-size:.93rem}
+
+/* Pilares */
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.pillar{border:1px solid var(--line);border-radius:20px;padding:2.4rem;background:var(--white);position:relative;overflow:hidden}
+.pillar::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--navy),var(--cyan))}
+.pillar i.big{font-size:1.6rem;width:56px;height:56px;border-radius:14px;display:grid;place-items:center;background:rgba(0,210,211,.14);color:var(--cyan-ink);margin-bottom:1.2rem}
+.pillar h3{font-size:1.4rem;letter-spacing:-.02em;margin-bottom:.6rem}
+.pillar p{color:var(--muted);margin-bottom:1.2rem}
+.pillar ul{list-style:none;display:grid;gap:.6rem}
+.pillar li{display:grid;grid-template-columns:20px 1fr;gap:.6rem;font-size:.95rem;color:#33445E}
+.pillar li i{color:var(--cyan-ink);margin-top:.35rem}
+
+/* Valores */
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.value{border-top:3px solid var(--cyan);padding-top:1.4rem}
+.value h3{font-size:1.25rem;margin-bottom:.5rem;letter-spacing:-.02em}
+.value p{color:var(--muted);font-size:.97rem}
+
+/* Pasos */
+.steps{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;position:relative}
+.step{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:2rem}
+.step-n{width:46px;height:46px;border-radius:50%;background:var(--navy);color:var(--cyan);font-weight:800;display:grid;place-items:center;margin-bottom:1.1rem}
+.step h3{font-size:1.08rem;font-weight:700;margin-bottom:.4rem}
+.step p{font-size:.9rem;color:var(--muted);line-height:1.5}
+
+/* Industrias */
+.industries{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.industry{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:2rem;transition:.25s;text-decoration:none;display:block}
+.industry:hover{transform:translateY(-5px);border-color:rgba(0,210,211,.7);box-shadow:0 20px 40px -25px rgba(14,29,62,.35)}
+.industry i{font-size:1.4rem;color:var(--navy);margin-bottom:1rem;display:block}
+.industry h3{font-size:1.12rem;margin-bottom:.4rem;color:var(--ink)}
+.industry p{color:var(--muted);font-size:.92rem;margin-bottom:1rem}
+.industry span{font-size:.85rem;font-weight:700;color:var(--cyan-ink);display:inline-flex;align-items:center;gap:.4rem}
+
+/* Beneficios con métricas */
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.benefit{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:2.2rem}
+.benefit b{display:block;font-size:2.6rem;font-weight:800;letter-spacing:-.03em;color:var(--navy);line-height:1;margin-bottom:.5rem}
+.benefit h3{font-size:1.15rem;margin-bottom:.5rem}
+.benefit p{color:var(--muted);font-size:.95rem}
+
+/* Caso */
+.case-points{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:2.5rem}
+.case-points li{border-top:2px solid var(--cyan);padding-top:1rem;color:#D3DDEA;font-size:.98rem}
+.verified{display:inline-flex;align-items:center;gap:.5rem;color:var(--wa);font-weight:700;font-size:.92rem;margin-bottom:1rem}
+
+/* Testimonios */
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+.testimonial{background:var(--white);border:1px solid var(--line);border-radius:20px;padding:2rem;display:flex;flex-direction:column}
+.testimonial .quote{font-size:2.6rem;line-height:1;color:var(--cyan);opacity:.5;font-weight:800;margin-bottom:.8rem}
+.testimonial p{font-size:.98rem;color:#33445E;flex:1;margin-bottom:1.5rem}
+.person{display:flex;gap:.9rem;align-items:center;padding-top:1.2rem;border-top:1px solid var(--line)}
+.initials{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--cyan);font-weight:800;display:grid;place-items:center;flex:none;font-size:.9rem}
+.person strong{display:block;font-size:.95rem}
+.person span{font-size:.82rem;color:var(--muted)}
+.disclaimer{margin-top:2rem;font-size:.82rem;color:var(--muted);text-align:center;font-style:italic}
+
+/* Confianza */
+.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.trust-grid .sec-head{margin-bottom:0}
+.trust-list{list-style:none;display:grid;gap:1.1rem}
+.trust-list li{display:grid;grid-template-columns:46px 1fr;gap:1rem;align-items:start}
+.trust-list i{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:rgba(0,210,211,.14);color:var(--cyan);font-size:1.05rem}
+.trust-list strong{display:block;font-size:1rem;margin-bottom:.2rem}
+.trust-list span{color:#B9C8DD;font-size:.92rem}
+.seal{display:inline-flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:.8rem 1.1rem;margin-top:2rem;font-size:.9rem;color:#D3DDEA}
+.seal i{color:var(--cyan)}
+
+/* Integraciones */
+.integ{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.integ article{background:var(--white);border-radius:16px;padding:2rem;border:1px solid var(--line)}
+.integ i{font-size:1.4rem;color:var(--navy);margin-bottom:1rem;display:block}
+.integ h3{font-size:1.15rem;margin-bottom:.45rem}
+.integ p{color:var(--muted);font-size:.95rem}
+.systems{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:2rem;align-items:center}
+.systems small{color:var(--muted);font-size:.9rem;margin-right:.4rem}
+.systems span{border:1px solid var(--line);background:var(--white);border-radius:999px;padding:.35rem .9rem;font-weight:600;font-size:.88rem;color:#33445E}
+
+/* Precios */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:stretch}
+.plan{border:1px solid var(--line);border-radius:20px;padding:2.4rem;display:flex;flex-direction:column;background:var(--white)}
+.plan.featured{background:var(--navy);color:var(--white);border-color:var(--navy);position:relative}
+.plan h3{font-size:1.45rem;letter-spacing:-.02em;line-height:1.2}
+.plan .opt{display:block;font-size:.9rem;font-weight:600;color:var(--muted);margin-bottom:.3rem}
+.plan.featured .opt{color:#9FB3CF}
+.plan-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.6rem}
+.pill{background:var(--cyan);color:var(--navy-deep);font-weight:700;font-size:.76rem;padding:.3rem .7rem;border-radius:999px;white-space:nowrap}
+.plan-desc{color:var(--muted);margin-bottom:1.6rem;font-size:.95rem}
+.plan.featured .plan-desc{color:#C9D6E8}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.8rem;flex:1}
+.plan li{display:grid;grid-template-columns:20px 1fr;gap:.7rem;font-size:.94rem}
+.plan li i{color:var(--cyan-ink);margin-top:.3rem}
+.plan.featured li i{color:var(--cyan)}
+.price-model{border-top:1px solid var(--line);padding-top:1.2rem;margin-bottom:1.4rem;font-size:.95rem}
+.plan.featured .price-model{border-color:rgba(255,255,255,.15)}
+.price-model b{display:block;font-size:1.1rem}
+.plan .btn{width:100%}
+
+/* FAQ */
+.faq{max-width:820px;margin:0 auto}
+.faq details{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.4rem;margin-bottom:.9rem}
+.faq summary{cursor:pointer;font-weight:700;font-size:1.02rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"\f078";font-family:"Font Awesome 6 Free";font-weight:900;color:var(--cyan-ink);transition:.25s;font-size:.8rem}
+.faq details[open] summary::after{transform:rotate(180deg)}
+.faq p{color:var(--muted);font-size:.95rem;margin-top:.9rem}
+
+/* Contacto */
+.contact{background:var(--paper)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;border-radius:24px;overflow:hidden;background:var(--white);border:1px solid var(--line)}
+.contact-info{background:var(--navy);color:var(--white);padding:3.5rem}
+.contact-info h2{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.12;letter-spacing:-.025em;margin-bottom:1rem}
+.contact-info>p{color:#C9D6E8;margin-bottom:2.5rem;max-width:44ch}
+.c-line{display:flex;align-items:center;gap:1rem;padding:1.1rem 0;border-top:1px solid rgba(255,255,255,.12);text-decoration:none}
+.c-line i{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(0,210,211,.14);color:var(--cyan);font-size:1.1rem}
+.c-line small{display:block;color:#9FB3CF;font-size:.82rem}
+.c-line b{font-size:1.08rem}
+.form{padding:3.5rem}
+.form h3{font-size:1.35rem;margin-bottom:.4rem}
+.form>p{color:var(--muted);font-size:.95rem;margin-bottom:1.8rem}
+.field{margin-bottom:1.1rem}
+.field label{display:block;font-weight:600;font-size:.88rem;margin-bottom:.4rem}
+.field input,.field select,.field textarea{width:100%;padding:.8rem 1rem;border:1px solid var(--line);border-radius:10px;font:1rem var(--font);color:var(--ink);background:var(--white)}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,210,211,.25)}
+.form-ok{display:none;margin-top:1rem;background:#E6FAF0;color:#0C6B3A;border-radius:10px;padding:.9rem 1rem;font-weight:600;font-size:.95rem}
+.form-ok.show{display:flex;gap:.6rem;align-items:center}
+.form-err{display:none;margin-top:1rem;background:#FDECEC;color:#9B1C1C;border-radius:10px;padding:.9rem 1rem;font-weight:600;font-size:.95rem}
+.form-err.show{display:block}
+.form-err a{text-decoration:underline}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* Footer */
+footer{background:var(--navy-deep);color:#9FB3CF;padding:4.5rem 0 2rem}
+.f-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.f-brand{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.3rem;color:var(--white);margin-bottom:1.2rem}
+.f-brand .brand-mark{width:34px;height:34px;font-size:.95rem}
+.f-grid p{font-size:.92rem;max-width:36ch}
+.f-grid h4{color:var(--white);font-size:.98rem;margin-bottom:1rem}
+.f-grid ul{list-style:none;display:flex;flex-direction:column;gap:.6rem;font-size:.92rem}
+.f-grid a{text-decoration:none}
+.f-grid a:hover{color:var(--cyan)}
+.f-grid li i{color:var(--cyan);width:1.2rem}
+.f-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:1.8rem;font-size:.84rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-bottom a{text-decoration:none}
+.f-bottom a:hover{color:var(--cyan)}
+
+/* WhatsApp flotante */
+.wa-float{position:fixed;right:22px;bottom:22px;width:58px;height:58px;border-radius:50%;background:var(--wa);color:#fff;display:grid;place-items:center;font-size:30px;box-shadow:0 10px 24px -6px rgba(37,211,102,.55);z-index:90;text-decoration:none}
+.wa-float:hover{background:#1EBE5A}
+
+/* Responsive */
+@media (max-width:1080px){
+  .problem-grid,.industries,.steps{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:960px){
+  .nav{padding:0 1.5rem}
+  .nav-links{display:none;position:absolute;top:92px;left:0;right:0;background:#000B3D;flex-direction:column;align-items:stretch;gap:0;padding:.5rem 1.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.12)}
+  .nav-links.open{display:flex}
+  .nav-links > li{width:100%}
+  .nav-links a{padding:.85rem 0;border-bottom:1px solid rgba(255,255,255,.12);justify-content:space-between}
+  .nav-links a i{display:none}
+  .dropdown{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:0;padding:0 0 .4rem;min-width:0}
+  .dropdown a{padding:.6rem 0 .6rem 1rem;border:0;color:#C9D6E8}
+  .menu-btn{display:block}
+  .nav-cta .login{display:none}
+  .nav-cta .btn-demo{display:none}
+  .hero-grid,.pillars,.trust-grid,.contact-grid,.benefits,.values,.testimonials,.plans,.integ{grid-template-columns:1fr}
+  .hero-grid{gap:3rem;padding-top:3.5rem}
+  .case-points{grid-template-columns:1fr;gap:1.2rem}
+  .f-grid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  section{padding:4.5rem 0}
+  .metrics-inner{grid-template-columns:1fr}
+  .metric+.metric{border-left:0;border-top:1px solid var(--line)}
+  .metric{padding:1.3rem 1.5rem}
+  .problem-grid,.industries,.steps{grid-template-columns:1fr}
+  .contact-info,.form,.plan{padding:2rem}
+  .f-grid{grid-template-columns:1fr}
+  .hero-actions .btn{width:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .chat .anim{opacity:1;transform:none}
+  *{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap nav">
+    <a href="#inicio" class="brand" aria-label="Totemly, inicio">
+      <img src="img/logo.png" alt="Totemly" class="brand-logo">
+    </a>
+    <ul class="nav-links" id="menu">
+      <li>
+        <a href="#plataforma">Plataforma <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown">
+          <a href="#plataforma"><i class="fas fa-robot"></i> Agentes de IA</a>
+          <a href="#plataforma"><i class="fas fa-shield-halved"></i> Mensajería segura y trazable</a>
+          <a href="#integraciones"><i class="fas fa-plug"></i> Integraciones</a>
+          <a href="#confianza"><i class="fas fa-lock"></i> Seguridad y cumplimiento</a>
+        </div>
+      </li>
+      <li>
+        <a href="#soluciones">Soluciones <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown">
+          <a href="#soluciones"><i class="fas fa-utensils"></i> Restaurantes</a>
+          <a href="#soluciones"><i class="fas fa-mug-hot"></i> Cafeterías</a>
+          <a href="#soluciones"><i class="fas fa-music"></i> Centros nocturnos</a>
+          <a href="#soluciones"><i class="fas fa-briefcase"></i> Pymes y medianas</a>
+        </div>
+      </li>
+      <li>
+        <a href="#recursos">Recursos <i class="fas fa-chevron-down"></i></a>
+        <div class="dropdown">
+          <a href="#recursos"><i class="fas fa-newspaper"></i> Blog</a>
+          <a href="#recursos"><i class="fas fa-trophy"></i> Casos de éxito</a>
+          <a href="#recursos"><i class="fas fa-graduation-cap"></i> Guías y webinars</a>
+          <a href="#recursos"><i class="fas fa-circle-question"></i> Centro de ayuda</a>
+        </div>
+      </li>
+      <li><a href="#nosotros">Nosotros</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="#demo" class="btn btn-cyan btn-demo"><i class="far fa-calendar-check"></i> Solicitar demo</a>
+      <button class="menu-btn" aria-controls="menu" aria-expanded="false" aria-label="Abrir menú"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<main id="inicio">
+
+  <section class="hero" style="padding:0">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="hero-kicker"><i class="fas fa-bolt"></i> Nuevo: agentes de IA + mensajería segura y trazable</p>
+        <h1>Conversaciones que <span class="grad">venden</span>, resultados que se <span class="grad">comprueban</span>.</h1>
+        <p class="hero-lead">Totemly ya no es solo mensajería: es tu plataforma de automatización comercial. Vende más, atiende mejor y escala sin perder el trato humano.</p>
+        <p class="hero-say">"Tus clientes escriben a cualquier hora. Totemly responde, vende y te deja el registro."</p>
+        <div class="hero-actions">
+          <a href="#demo" class="btn btn-cyan"><i class="fas fa-paper-plane"></i> Solicitar demo</a>
+          <a href="#como-funciona" class="btn btn-line"><i class="fas fa-circle-play"></i> Ver cómo funciona</a>
+        </div>
+        <p class="hero-note">Sin tarjeta · Demo en 20 minutos · Cancela cuando quieras</p>
+      </div>
+
+      <div>
+        <div class="phone" aria-label="Ejemplo de promoción enviada por WhatsApp con Totemly">
+          <div class="screen">
+            <div class="wa-bar">
+              <div class="wa-avatar">CA</div>
+              <div>
+                <div class="wa-name">Café Andino <i class="fas fa-circle-check" title="Cuenta verificada"></i></div>
+                <div class="wa-sub">Promoción enviada con Totemly</div>
+              </div>
+            </div>
+            <div class="chat">
+              <span class="day">Hoy · 10:02</span>
+              <div class="bubble agent anim">
+                <span class="badge-ai"><i class="fas fa-robot"></i> Agente Totemly</span>
+                <img src="img/promo-cafe-andino.svg" alt="Promoción 2x1 en café de especialidad de Café Andino" class="promo-img">
+                <strong>2x1 en café de especialidad</strong> hasta el jueves. ¡Te esperamos, Camila!
+                <div class="meta">10:02</div>
+              </div>
+              <div class="bubble in anim">
+                ¡Buenísimo! ¿Aplica si pido por WhatsApp?
+                <div class="meta">10:03</div>
+              </div>
+              <div class="bubble agent anim">
+                <span class="badge-ai"><i class="fas fa-robot"></i> Agente Totemly</span>
+                ¡Claro! Pídelo por aquí y usa el cupón <strong>CAFE2X1</strong>. Válido hasta el jueves a las 19:00.
+                <div class="meta">10:03 <i class="fas fa-check-double ticks read"></i></div>
+                <span class="quick">Pedir ahora</span>
+              </div>
+              <div class="bubble in anim">
+                ¡Perfecto, paso mañana!
+                <div class="meta">10:04</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="status" aria-hidden="true">
+          <span data-s="0" class="on"><i class="dot"></i>Enviado por IA</span>
+          <span data-s="1" class="on"><i class="dot"></i>Registrado</span>
+          <span data-s="2" class="on"><i class="dot"></i>Trazado</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap metrics">
+    <div class="metrics-inner">
+      <div class="metric"><b>+98%</b><span>Tasa de apertura en WhatsApp</span></div>
+      <div class="metric"><b>24/7</b><span>Atención que no duerme</span></div>
+      <div class="metric"><b>100%</b><span>Mensajes trazados y auditables</span></div>
+    </div>
+  </div>
+
+  <section id="problema" class="paper">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">El problema</p>
+        <h2>Lo que hoy te cuesta ventas y tranquilidad</h2>
+        <p>Vender más no debería significar contratar más ni arriesgar el cumplimiento. Estos son los frenos que Totemly resuelve.</p>
+      </div>
+      <div class="problem-grid">
+        <div class="problem-card"><i class="fas fa-hourglass-half"></i><h3>Leads sin responder</h3><p>Escriben a cualquier hora y respondes tarde. El cliente ya compró en otro lado.</p></div>
+        <div class="problem-card"><i class="fas fa-fire"></i><h3>Atención saturada</h3><p>Tu equipo apaga incendios en vez de enfocarse en la experiencia y en cerrar ventas.</p></div>
+        <div class="problem-card"><i class="fas fa-diagram-project"></i><h3>Comunicación sin control</h3><p>Canales dispersos y campañas sin seguimiento. Nadie ve la conversación completa.</p></div>
+        <div class="problem-card"><i class="fas fa-file-circle-xmark"></i><h3>Sin evidencia ni cumplimiento</h3><p>Envías miles de mensajes y no puedes demostrar qué se envió, a quién y con qué respaldo.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="plataforma">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">La solución</p>
+        <h2>Dos pilares, una sola plataforma</h2>
+        <p>No es un chatbot suelto ni un proveedor de SMS. Es automatización comercial y mensajería trazable trabajando juntas.</p>
+      </div>
+      <div class="pillars">
+        <article class="pillar">
+          <i class="fas fa-robot big"></i>
+          <h3>Agentes de IA</h3>
+          <p>Venden, atienden y dan seguimiento por ti. Configurados con tu información, tus productos y tu tono de marca.</p>
+          <ul>
+            <li><i class="fas fa-check"></i> Prospectan, califican y agendan</li>
+            <li><i class="fas fa-check"></i> Hacen seguimiento y recuperan clientes</li>
+            <li><i class="fas fa-check"></i> Responden 24/7 sin perder el trato humano</li>
+          </ul>
+        </article>
+        <article class="pillar">
+          <i class="fas fa-shield-halved big"></i>
+          <h3>Mensajería segura y trazable</h3>
+          <p>Miles de mensajes, control individual. Cada comunicación deja evidencia verificable y auditable.</p>
+          <ul>
+            <li><i class="fas fa-check"></i> WhatsApp, SMS y email desde un solo lugar</li>
+            <li><i class="fas fa-check"></i> Confirmación de entrega y lectura</li>
+            <li><i class="fas fa-check"></i> Cumplimiento normativo y roles de acceso</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona" class="paper">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Cómo funciona</p>
+        <h2>Conectas, automatizas, mides y compruebas</h2>
+        <p>Sin desarrollos eternos y con acompañamiento nuestro en cada paso.</p>
+      </div>
+      <ol class="steps">
+        <li class="step"><div class="step-n">1</div><h3>Conectas</h3><p>Sumamos tus canales, tu CRM y tu POS a una sola plataforma.</p></li>
+        <li class="step"><div class="step-n">2</div><h3>Automatizas</h3><p>Configuramos tus agentes de IA con tu tono, oferta y reglas de negocio.</p></li>
+        <li class="step"><div class="step-n">3</div><h3>Mides</h3><p>Ves en tiempo real ventas, respuestas, campañas y tiempos de atención.</p></li>
+        <li class="step"><div class="step-n">4</div><h3>Compruebas</h3><p>Cada comunicación queda trazada con evidencia lista para auditoría.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Nuestros valores</p>
+        <h2>Lo que puedes esperar de nosotros</h2>
+        <p>Tecnología potente, pero simple, cercana y con evidencia en cada paso.</p>
+      </div>
+      <div class="values">
+        <div class="value">
+          <h3>Confianza que se comprueba</h3>
+          <p>Seguridad, cumplimiento normativo y trazabilidad real. Cada comunicación deja evidencia verificable.</p>
+        </div>
+        <div class="value">
+          <h3>Eficiencia que libera</h3>
+          <p>La IA gestiona ventas, marketing y atención para que tu equipo se enfoque en la experiencia y las decisiones importantes.</p>
+        </div>
+        <div class="value">
+          <h3>Cercanía que escala</h3>
+          <p>Crecé con pymes, cafeterías, restaurantes y centros nocturnos, sin perder el trato cercano.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="soluciones">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Soluciones</p>
+        <h2>Una plataforma, múltiples negocios</h2>
+        <p>Automatización comercial adaptada a la realidad de tu operación.</p>
+      </div>
+      <div class="industries">
+        <a href="#demo" class="industry"><i class="fas fa-utensils"></i><h3>Restaurantes</h3><p>Reservas, pedidos y promociones que se atienden solos, a cualquier hora.</p><span>Ver solución <i class="fas fa-arrow-right"></i></span></a>
+        <a href="#demo" class="industry"><i class="fas fa-mug-hot"></i><h3>Cafeterías</h3><p>Cálido y antojable: fideliza, recuerda y vende sin perder el trato humano.</p><span>Ver solución <i class="fas fa-arrow-right"></i></span></a>
+        <a href="#demo" class="industry"><i class="fas fa-music"></i><h3>Centros nocturnos</h3><p>Energético y exclusivo: reservas, listas y eventos gestionados al instante.</p><span>Ver solución <i class="fas fa-arrow-right"></i></span></a>
+        <a href="#demo" class="industry"><i class="fas fa-briefcase"></i><h3>Pymes y medianas</h3><p>Profesional y directo: eficiencia comercial con medición y control real.</p><span>Ver solución <i class="fas fa-arrow-right"></i></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="beneficios" class="paper">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Beneficios</p>
+        <h2>Vender más, atender mejor, cumplir normativa</h2>
+        <p>Resultados que puedes medir y comprobar, no promesas.</p>
+      </div>
+      <div class="benefits">
+        <article class="benefit"><b>+30%</b><h3>Vendes más</h3><p>Tus agentes de IA prospectan, responden y dan seguimiento para que ningún lead se enfríe.</p></article>
+        <article class="benefit"><b>24/7</b><h3>Atiendes mejor</h3><p>Respuesta inmediata a cualquier hora, todos los días, con la calidez de tu marca.</p></article>
+        <article class="benefit"><b>100%</b><h3>Compruebas todo</h3><p>Trazabilidad y cumplimiento normativo en cada mensaje, listo para auditoría.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="recursos" class="dark">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Casos y prueba social</p>
+        <h2>Negocios que ya venden y comprueban con Totemly</h2>
+        <p>Equipos comerciales, de operaciones y de experiencia al cliente que dejaron atrás el seguimiento manual.</p>
+      </div>
+      <div class="testimonials">
+        <article class="testimonial">
+          <div class="quote">&ldquo;</div>
+          <p>Antes perdíamos reservas por responder tarde. Hoy el agente contesta de inmediato y nos deja el registro. Subimos la ocupación de fin de semana un 28%.</p>
+          <div class="person"><div class="initials">CM</div><div><strong>Camila Muñoz</strong><span>Dueña · Restaurante · Santiago</span></div></div>
+        </article>
+        <article class="testimonial">
+          <div class="quote">&ldquo;</div>
+          <p>Necesitábamos demostrar entrega ante auditoría. Con Totemly tenemos historial completo de cada mensaje y nos ahorró meses de trabajo administrativo.</p>
+          <div class="person"><div class="initials">RF</div><div><strong>Rodrigo Fuentes</strong><span>Operaciones · Servicios · Providencia</span></div></div>
+        </article>
+        <article class="testimonial">
+          <div class="quote">&ldquo;</div>
+          <p>Dejamos de depender de cinco herramientas. Ventas, reservas y atención quedaron en un solo lugar, y todo queda trazado.</p>
+          <div class="person"><div class="initials">VR</div><div><strong>Valentina Rojas</strong><span>Experiencia al cliente · Retail · Concepción</span></div></div>
+        </article>
+      </div>
+      <p class="disclaimer">Testimonios de ejemplo con fines ilustrativos.</p>
+    </div>
+  </section>
+
+  <section id="confianza" class="dark" style="padding-top:0">
+    <div class="wrap">
+      <div class="trust-grid">
+        <div class="sec-head">
+          <p class="eyebrow">Seguridad y cumplimiento</p>
+          <h2>Confianza que se comprueba</h2>
+          <p>En mensajería corporativa, la seguridad y la trazabilidad no son un detalle: son parte del argumento. Aquí son la base.</p>
+          <span class="seal"><i class="fas fa-circle-check"></i> Cumplimiento normativo y evidencia verificable</span>
+        </div>
+        <ul class="trust-list">
+          <li><i class="fas fa-lock"></i><div><strong>Encriptación y protección de datos</strong><span>Tu información y la de tus clientes, resguardada en todo el ciclo.</span></div></li>
+          <li><i class="fas fa-user-shield"></i><div><strong>Roles de acceso</strong><span>Cada persona ve solo lo que le corresponde, con control centralizado.</span></div></li>
+          <li><i class="fas fa-file-signature"></i><div><strong>Consentimientos y trazabilidad</strong><span>Registro de quién recibió qué, cuándo y con qué autorización.</span></div></li>
+          <li><i class="fas fa-server"></i><div><strong>Alta disponibilidad y SLA</strong><span>Infraestructura robusta para comunicaciones críticas.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="integraciones" class="paper">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Integraciones</p>
+        <h2>Se conecta con lo que ya usas</h2>
+        <p>Sumamos Totemly a tu operación actual, sin obligarte a cambiar de sistema.</p>
+      </div>
+      <div class="integ">
+        <article><i class="fas fa-code"></i><h3>API y documentación</h3><p>Dispara mensajes y acciones de IA desde tus propios sistemas con APIs REST.</p></article>
+        <article><i class="fas fa-network-wired"></i><h3>CRM y POS</h3><p>Conectores directos con tu CRM, ERP y punto de venta para automatizar el ciclo comercial.</p></article>
+        <article><i class="fas fa-bag-shopping"></i><h3>E-commerce y pagos</h3><p>Recupera carritos, confirma pedidos y cobra desde la conversación.</p></article>
+      </div>
+      <div class="systems">
+        <small>Compatible con</small>
+        <span>WhatsApp Business</span><span>Salesforce</span><span>HubSpot</span><span>Zoho</span><span>Shopify</span><span>WooCommerce</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Preguntas frecuentes</p>
+        <h2>Lo que suelen preguntarnos</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>¿Reemplaza a mi equipo?</summary>
+          <p>No. La IA ayuda, no reemplaza el trato humano. Totemly se encarga de lo repetitivo para que tu equipo se enfoque en la experiencia y en las decisiones importantes.</p>
+        </details>
+        <details>
+          <summary>¿En cuánto tiempo queda operativo?</summary>
+          <p>En la mayoría de los casos, en pocos días. Te acompañamos con el onboarding, la carga de tu información y la configuración de tus agentes.</p>
+        </details>
+        <details>
+          <summary>¿Cómo compruebo cada mensaje?</summary>
+          <p>Cada comunicación queda registrada con su estado, destino y respaldo. Tienes trazabilidad y evidencia lista para auditoría y cumplimiento normativo.</p>
+        </details>
+        <details>
+          <summary>¿Funciona con mi CRM o POS actual?</summary>
+          <p>Sí. Nos integramos con CRM, ERP, POS y e-commerce, y ofrecemos API para tus desarrollos propios.</p>
+        </details>
+        <details>
+          <summary>¿Necesito conocimientos técnicos?</summary>
+          <p>No. Configuras todo desde un panel simple y en español, con acompañamiento de nuestro equipo cuando lo necesites.</p>
+        </details>
+        <details>
+          <summary>¿Puedo probar antes de contratar?</summary>
+          <p>Sí. Solicita una demo y te mostramos tu propio caso funcionando con agentes de IA y mensajería trazable.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="contact" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <h2>¿Listo para vender más y comprobar todo?</h2>
+          <p>Conversa con nuestro equipo y arma tu estrategia de automatización comercial con agentes de IA y mensajería trazable.</p>
+          <a class="c-line" href="mailto:contacto@totemly.cl"><i class="fas fa-envelope"></i><div><small>Correo</small><b>contacto@totemly.cl</b></div></a>
+          <a class="c-line" href="https://wa.me/56900000000" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i><div><small>Atención por WhatsApp</small><b>Hablemos ahora</b></div></a>
+          <div class="c-line"><i class="fas fa-location-dot"></i><div><small>Cobertura</small><b>Chile y Latam</b></div></div>
+        </div>
+        <div id="demo">
+          <form class="form" id="form" novalidate>
+            <h3>Solicita una demo</h3>
+            <p>Te contactamos en menos de un día hábil.</p>
+            <div class="field"><label for="f-nombre">Nombre y apellido *</label><input id="f-nombre" name="Nombre" type="text" placeholder="Ej. Camila Muñoz" required autocomplete="name"></div>
+            <div class="field"><label for="f-empresa">Empresa o negocio *</label><input id="f-empresa" name="Empresa" type="text" placeholder="Ej. Café Andino" required autocomplete="organization"></div>
+            <div class="field"><label for="f-mail">Correo electrónico *</label><input id="f-mail" name="email" type="email" placeholder="camila@empresa.cl" required autocomplete="email"></div>
+            <div class="field"><label for="f-necesidad">¿Qué quieres resolver primero?</label>
+              <select id="f-necesidad" name="Necesidad">
+                <option>Vender más</option>
+                <option>Atender mejor</option>
+                <option>Automatizar reservas y pedidos</option>
+                <option>Mensajería masiva trazable</option>
+                <option>Cumplimiento normativo</option>
+              </select>
+            </div>
+            <div class="hp" aria-hidden="true"><label for="f-hp">No completar</label><input id="f-hp" type="text" name="_honey" tabindex="-1" autocomplete="off"></div>
+            <button type="submit" class="btn btn-cyan" style="width:100%"><i class="fas fa-paper-plane"></i> Enviar solicitud</button>
+            <div class="form-ok" role="status" id="form-ok"><i class="fas fa-circle-check"></i> Solicitud enviada. Nuestro equipo se comunicará contigo pronto.</div>
+            <div class="form-err" role="alert" id="form-err"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="nosotros" class="dark" style="padding-top:4rem">
+    <div class="wrap">
+      <div class="sec-head center">
+        <p class="eyebrow">Nosotros</p>
+        <h2>Simple por fuera, potente por dentro</h2>
+        <p>Nacimos como una plataforma de mensajería corporativa y evolucionamos a una plataforma de automatización comercial. Ayudamos a pymes, cafeterías, restaurantes y centros nocturnos a vender más, atender mejor y mantener el control con evidencia en cada paso.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <div class="f-brand"><img src="img/logo.png" alt="Totemly" class="brand-logo"></div>
+        <p>Plataforma de automatización comercial con agentes de IA y mensajería corporativa segura y trazable.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul>
+          <li><a href="#plataforma">Agentes de IA</a></li>
+          <li><a href="#plataforma">Mensajería trazable</a></li>
+          <li><a href="#integraciones">Integraciones</a></li>
+          <li><a href="#confianza">Seguridad y cumplimiento</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Soluciones</h4>
+        <ul>
+          <li><a href="#soluciones">Restaurantes</a></li>
+          <li><a href="#soluciones">Cafeterías</a></li>
+          <li><a href="#soluciones">Centros nocturnos</a></li>
+          <li><a href="#soluciones">Pymes y medianas</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="mailto:contacto@totemly.cl"><i class="fas fa-envelope"></i> contacto@totemly.cl</a></li>
+          <li><a href="#demo"><i class="fas fa-calendar-check"></i> Solicitar demo</a></li>
+          <li><i class="fas fa-headset"></i> Soporte a clientes</li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© <span id="year"></span> Totemly. Todos los derechos reservados.</span>
+      <span><a href="#">Privacidad</a> · <a href="#">Términos</a> · <a href="#">Cookies</a> · Cumplimiento normativo</span>
+    </div>
+  </div>
+</footer>
+
+<a href="https://wa.me/56900000000?text=Hola,%20quiero%20una%20demo%20de%20Totemly" target="_blank" rel="noopener" class="wa-float" aria-label="Escríbenos por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+
+<script>
+document.documentElement.classList.add('js');
+document.getElementById('year').textContent = new Date().getFullYear();
+
+var menuBtn = document.querySelector('.menu-btn'), menu = document.getElementById('menu');
+menuBtn.addEventListener('click', function(){
+  var open = menu.classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', open);
+  menuBtn.innerHTML = open ? '<i class="fas fa-xmark"></i>' : '<i class="fas fa-bars"></i>';
+});
+menu.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){
+  menu.classList.remove('open');
+  menuBtn.setAttribute('aria-expanded', false);
+  menuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+});});
+
+(function(){
+  var items = [].slice.call(document.querySelectorAll('.chat .anim'));
+  var st = [].slice.call(document.querySelectorAll('.status span'));
+  var tick = document.querySelector('.chat .ticks');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches){ items.forEach(function(i){ i.classList.add('show'); }); return; }
+  st.forEach(function(s){ s.classList.remove('on'); });
+  if (tick) tick.classList.remove('read');
+  var seq = [
+    [300,  function(){ items[0].classList.add('show'); st[0].classList.add('on'); }],
+    [1200, function(){ items[1].classList.add('show'); st[1].classList.add('on'); }],
+    [2400, function(){ items[2].classList.add('show'); st[2].classList.add('on'); }],
+    [3400, function(){ if (tick) tick.classList.add('read'); }],
+    [3900, function(){ items[3].classList.add('show'); }]
+  ];
+  seq.forEach(function(pair){ setTimeout(pair[1], pair[0]); });
+})();
+
+if ('IntersectionObserver' in window){
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.style.opacity = 1; e.target.style.transform = 'none'; io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('section > .wrap, .metrics-inner').forEach(function(el){
+    el.style.opacity = 0; el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .6s ease, transform .6s ease';
+    io.observe(el);
+  });
+}
+
+/* Cambia MAIL_TO por el correo real de Totemly antes de publicar. */
+var MAIL_TO = 'contacto@totemly.cl';
+var form = document.getElementById('form');
+form.addEventListener('submit', async function(e){
+  e.preventDefault();
+  var btn = form.querySelector('button[type=submit]');
+  var ok = document.getElementById('form-ok'), err = document.getElementById('form-err');
+  ok.classList.remove('show'); err.classList.remove('show');
+  if (!form.checkValidity()){ form.reportValidity(); return; }
+  var data = Object.fromEntries(new FormData(form).entries());
+  if (data._honey) return;
+  var label = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+  var payload = Object.assign({}, data, {
+    _subject: 'Nueva solicitud de demo - ' + (data.Empresa || 'Totemly'),
+    _replyto: data.email, _template: 'table', _captcha: 'false'
+  });
+  try{
+    var r = await fetch('https://formsubmit.co/ajax/' + MAIL_TO, {
+      method: 'POST', headers: {'Content-Type':'application/json','Accept':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    var j = await r.json().catch(function(){ return {}; });
+    if (!r.ok || String(j.success) === 'false') throw new Error(j.message || 'Error');
+    ok.classList.add('show'); form.reset(); btn.innerHTML = label; btn.disabled = false;
+  }catch(ex){
+    var body = Object.entries(data).filter(function(kv){ return kv[0] !== '_honey'; }).map(function(kv){ return kv[0] + ': ' + kv[1]; }).join('\n');
+    var mailto = 'mailto:' + MAIL_TO + '?subject=' + encodeURIComponent('Solicitud de demo - ' + (data.Empresa || '')) + '&body=' + encodeURIComponent(body);
+    err.innerHTML = 'No pudimos enviar la solicitud. Inténtalo de nuevo o <a href="' + mailto + '">envíala desde tu correo</a>.';
+    err.classList.add('show'); btn.disabled = false; btn.innerHTML = label;
+  }
+});
+</script>
+</body>
+</html>

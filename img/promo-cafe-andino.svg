@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400" role="img" aria-label="Promoción 2x1 en café de especialidad de Café Andino">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#000B3D"/>
+      <stop offset="1" stop-color="#062B6B"/>
+    </linearGradient>
+    <linearGradient id="cup" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#00E0E1"/>
+      <stop offset="1" stop-color="#00A6A7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="400" fill="url(#bg)"/>
+
+  <g fill="#00D2D3" opacity="0.14">
+    <circle cx="48" cy="48" r="4"/><circle cx="104" cy="48" r="4"/><circle cx="160" cy="48" r="4"/>
+    <circle cx="48" cy="104" r="4"/><circle cx="104" cy="104" r="4"/><circle cx="160" cy="104" r="4"/>
+    <circle cx="48" cy="160" r="4"/><circle cx="104" cy="160" r="4"/><circle cx="160" cy="160" r="4"/>
+  </g>
+
+  <text x="60" y="106" fill="#00D2D3" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="6">PROMO DE LA SEMANA</text>
+
+  <text x="52" y="250" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="148" font-weight="800" letter-spacing="-4">2x1</text>
+
+  <text x="60" y="312" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="700">Café de especialidad</text>
+  <text x="60" y="356" fill="#9FB3CF" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="500">Hasta el jueves · 19:00</text>
+
+  <g transform="translate(618,205)">
+    <g fill="none" stroke="#00D2D3" stroke-width="9" stroke-linecap="round" opacity="0.85">
+      <path d="M -46 -118 q 16 -22 0 -44 q -16 -22 0 -44"/>
+      <path d="M 0 -118 q 16 -22 0 -44 q -16 -22 0 -44"/>
+      <path d="M 46 -118 q 16 -22 0 -44 q -16 -22 0 -44"/>
+    </g>
+    <path d="M 74 -34 q 74 0 74 62 q 0 62 -74 62" fill="none" stroke="url(#cup)" stroke-width="18" stroke-linecap="round"/>
+    <path d="M -72 -46 L 72 -46 L 56 96 q -5 22 -27 22 L -29 118 q -22 0 -27 -22 Z" fill="url(#cup)"/>
+    <rect x="-84" y="-60" width="168" height="20" rx="10" fill="#FFFFFF" opacity="0.95"/>
+  </g>
+
+  <text x="740" y="60" fill="#9FB3CF" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="800" text-anchor="end">Café Andino</text>
+</svg>
